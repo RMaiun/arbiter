@@ -7,6 +7,6 @@ public class Validator {
   }
 
   public static <T> void validate(T dto, ValidationType<T> validationType) {
-    validationType.applyDto(dto).validate();
+    validationType.applyDto(dto).validate().check();
   }
 }
