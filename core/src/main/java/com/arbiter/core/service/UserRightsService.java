@@ -1,13 +1,12 @@
 package com.arbiter.core.service;
 
 
+import com.arbiter.core.config.AppProperties;
 import com.arbiter.core.domain.Player;
 import com.arbiter.core.exception.AuthorizationRuntimeException;
 import com.arbiter.core.exception.InvalidUserRightsException;
-import com.arbiter.core.exception.PlayerNotFoundException;
 import com.arbiter.core.repository.PlayerRepository;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
@@ -15,33 +14,33 @@ import org.springframework.stereotype.Service;
 public class UserRightsService {
 
   private final PlayerRepository playerRepository;
+  private final AppProperties appProperties;
 
-  @Value("${privileged}")
-  private String privileged;
-
-  public UserRightsService(PlayerRepository playerRepository) {
+  public UserRightsService(PlayerRepository playerRepository, AppProperties appProperties) {
     this.playerRepository = playerRepository;
+    this.appProperties = appProperties;
   }
 
-  public Player checkUserIsAdmin(String tid) {
-    if (tid.equals(privileged)) {
-      return playerRepository.getPlayer(privileged)
-          .orElseThrow(() -> new PlayerNotFoundException(privileged));
-    } else {
+  public void checkUserIsAdmin(String tid) {
+    if (!tid.equals(appProperties.privileged)) {
       var players = playerRepository.listAll();
-      return checkAdminPermissions(players, tid);
+      checkAdminPermissions(players, tid);
     }
   }
 
-  public Player checkUserIsRegistered(String tid) {
-    return playerRepository.getPlayerByCriteria(Criteria.where("tid").is(tid))
-        .orElseThrow(AuthorizationRuntimeException::new);
+  public void checkUserIsRegistered(String tid) {
+    var player = playerRepository.getPlayerByCriteria(Criteria.where("tid").is(tid));
+    if (player.isEmpty()) {
+      throw new AuthorizationRuntimeException();
+    }
   }
 
-  private Player checkAdminPermissions(List<Player> players, String tid) {
-    return players.stream()
+  private void checkAdminPermissions(List<Player> players, String tid) {
+    var foundPlayer = players.stream()
         .filter(p -> tid.equals(p.getTid()) && p.isAdmin())
-        .findAny()
-        .orElseThrow(InvalidUserRightsException::new);
+        .findAny();
+    if (foundPlayer.isEmpty()) {
+      throw new InvalidUserRightsException();
+    }
   }
 }

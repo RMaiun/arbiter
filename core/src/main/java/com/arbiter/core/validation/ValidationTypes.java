@@ -13,6 +13,9 @@ import static com.arbiter.core.validation.ValidationSchema.schema;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.round.AddRoundDto;
 import com.arbiter.core.dto.round.FindLastRoundsDto;
+import com.arbiter.core.dto.stats.GenerateStatsDocumentDto;
+import com.arbiter.core.dto.subscription.LinkTidDto;
+import com.arbiter.core.dto.subscription.SubscriptionActionDto;
 
 public interface ValidationTypes {
 
@@ -38,21 +41,18 @@ public interface ValidationTypes {
           .withRule(requiredRule(dto.surname(), "surname", length(2, 20), onlyLetters()))
           .withRule(rule(dto.moderator(), "moderator", notEmpty()));
 
-  // ValidationType<GenerateStatsDocumentDto> generateStatsDocumentValidationType = dto ->
-  //     schema()
-  //         .withRule(requiredRule(dto.getSeason(), "season", isSeason()));
-  //
-  // ValidationType<LinkTidDto> linkTidValidationType = dto ->
-  //     schema()
-  //         .withRule(rule(dto.getModerator(), "moderator", notEmpty(), onlyNumbers()))
-  //         .withRule(rule(dto.getNameToLink(), "nameToLink", length(2, 20), onlyLetters()))
-  //         .withRule(rule(dto.getTid(), "tid", notEmpty(), onlyNumbers()));
-  //
-  // ValidationType<SubscriptionActionDto> subscriptionActionValidationType = dto ->
-  //     schema()
-  //         .withRule(rule(dto.getTid(), "moderator", notEmpty(), onlyNumbers()));
-  //
-  // ValidationType<StoreAuditLogDto> storeAuditLogValidationType = dto ->
-  //     schema()
-  //         .withRule(requiredRule(dto.getMsg(), "msg", notEmpty()));
+  ValidationType<GenerateStatsDocumentDto> generateStatsDocumentValidationType = dto ->
+      schema()
+          .withRule(requiredRule(dto.season(), "season", isSeason()));
+
+  ValidationType<LinkTidDto> linkTidValidationType = dto ->
+      schema()
+          .withRule(rule(dto.moderator(), "moderator", notEmpty(), onlyNumbers()))
+          .withRule(rule(dto.nameToLink(), "nameToLink", length(2, 20), onlyLetters()))
+          .withRule(rule(dto.tid(), "tid", notEmpty(), onlyNumbers()));
+
+  ValidationType<SubscriptionActionDto> subscriptionActionValidationType = dto ->
+      schema()
+          .withRule(rule(dto.tid(), "moderator", notEmpty(), onlyNumbers()));
+
 }

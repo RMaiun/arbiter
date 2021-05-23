@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,6 +35,9 @@ public class RoundRepository {
 
   public Round saveRound(Round round) {
     return template.insert(round);
+  }
+  public int bulkSaveRounds(List<Round> rounds) {
+    return template.bulkOps(BulkMode.ORDERED,Round.class).insert(rounds).execute().getInsertedCount();
   }
 
   public List<Round> listLastRoundsBeforeDate(ZonedDateTime before) {
