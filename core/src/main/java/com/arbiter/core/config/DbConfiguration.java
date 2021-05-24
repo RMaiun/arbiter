@@ -4,7 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -16,21 +16,18 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 @Configuration
 public class DbConfiguration {
 
-  @Value("${mongo.url}")
-  private String mongoUrl;
-
-  @Value("${mongo.db}")
-  private String mongoDb;
+  @Autowired
+  private AppProperties appProperties;
 
 
   @Bean
   public MongoClient mongoClient() {
-    return MongoClients.create(mongoUrl);
+    return MongoClients.create(appProperties.mongoUrl);
   }
 
   @Bean
   public MongoTemplate reactiveMongoTemplate(MongoCustomConversions customConversions) {
-    MongoTemplate mt = new MongoTemplate(mongoClient(), mongoDb);
+    MongoTemplate mt = new MongoTemplate(mongoClient(), appProperties.mongoDb);
     MappingMongoConverter mongoMapping = (MappingMongoConverter) mt.getConverter();
     mongoMapping.setTypeMapper(new DefaultMongoTypeMapper(null));
     mongoMapping.setCustomConversions(customConversions);

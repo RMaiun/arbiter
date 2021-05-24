@@ -1,4 +1,4 @@
-package data;
+package com.arbiter.core.data;
 
 public class ValidationTestData {
 

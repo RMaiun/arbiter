@@ -1,4 +1,4 @@
-package validation;
+package com.arbiter.core.validation;
 
 
 import static com.arbiter.core.validation.NumberValidationFunctions.intBetween;
@@ -12,10 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.arbiter.core.dto.round.FindLastRoundsDto;
 import com.arbiter.core.exception.ValidationException;
-import com.arbiter.core.validation.ValidationType;
-import com.arbiter.core.validation.Validator;
-import data.ValidationTestData;
-import data.ValidationTestData.Cat;
+import com.arbiter.core.data.ValidationTestData;
+import com.arbiter.core.data.ValidationTestData.Cat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +49,7 @@ class ValidatorTest {
   }
 
   @Test
-  @DisplayName("Validator unsuccessfully processed FindLastRoundsDto with 2 validation errors")
+  @DisplayName("Validator unsuccessfully processed FindLastRoundsDto with 2 com.arbiter.core.validation errors")
   void testInvalidBothValues() {
     FindLastRoundsDto dto = new FindLastRoundsDto("S22|4", 40000);
     Throwable throwable = Assertions.assertThrows(ValidationException.class,

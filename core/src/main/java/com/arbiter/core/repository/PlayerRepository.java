@@ -53,4 +53,9 @@ public class PlayerRepository {
     return template.remove(Player.class)
         .all().getDeletedCount();
   }
+
+  public Long removeByTid(String tid) {
+    var query = new Query(Criteria.where("tid").is(tid));
+    return template.remove(query, Player.class).getDeletedCount();
+  }
 }

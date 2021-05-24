@@ -39,4 +39,10 @@ public class AppProperties {
 
   @Value("${app.privileged}")
   public String privileged;
+
+  @Value("${mongo.url}")
+  public String mongoUrl;
+
+  @Value("${mongo.db}")
+  public String mongoDb;
 }

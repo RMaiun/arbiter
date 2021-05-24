@@ -1,4 +1,4 @@
-package com.arbiter.core.helper;
+package com.arbiter.core.service;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -35,11 +35,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StatsServiceHelper {
+public class StatsCalculator {
 
   private final AppProperties appProps;
 
-  public StatsServiceHelper(AppProperties appProps) {
+  public StatsCalculator(AppProperties appProps) {
     this.appProps = appProps;
   }
 
