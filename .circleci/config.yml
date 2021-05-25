@@ -1,0 +1,72 @@
+# JAVA CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/sample-config/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:16-jdk-buster
+      - image: circleci/buildpack-deps:stretch
+
+    working_directory: ~/repo
+
+    environment:
+      IMAGE_NAME: mairo/arbiter
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
+    steps:
+      - checkout
+#      - restore_cache:
+#          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      # Download and cache dependencies
+#      - save_cache:
+#          paths:
+#            - ~/.gradle/wrapper
+#          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - run:
+          name: chmod permissions
+          command: chmod +x ./gradlew
+      - run: ./gradlew clean
+      - run: ./gradlew build
+      - run: ./gradlew bootJar
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - setup_remote_docker
+      - run: docker build -t $IMAGE_NAME:latest .
+      - run: docker save -o image.tar $IMAGE_NAME
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+  publish-latest:
+    environment:
+      IMAGE_NAME: mairo/arbiter
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run: docker load -i /tmp/workspace/image.tar
+      - run: cat /dev/null | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run: cat /dev/null | docker push $IMAGE_NAME:latest
+
+workflows:
+  version: 2
+  build-master:
+    jobs:
+      - build
+      - publish-latest:
+          context: myctx
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master

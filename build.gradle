@@ -51,6 +51,18 @@ dependencies {
   implementation  project(':arbiter-http')
   implementation  project(':arbiter-integration')
 }
+
+//jar {
+//  manifest {
+//    attributes(
+//        'Main-Class': 'com.arbiter.ArbiterApplication'
+//    )
+//  }
+//}
+
+bootJar {
+  enabled = true
+}
 //ext {
 //  set('testcontainersVersion', "1.15.3")
 //}
