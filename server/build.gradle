@@ -1,0 +1,25 @@
+dependencies {
+  implementation  project(':server:arbiter-http')
+  implementation  project(':server:arbiter-integration')
+}
+
+//jar {
+//  manifest {
+//    attributes(
+//        'Main-Class': 'com.arbiter.ArbiterApplication'
+//    )
+//  }
+//}
+
+bootJar {
+  enabled = true
+}
+//ext {
+//  set('testcontainersVersion', "1.15.3")
+//}
+
+//dependencyManagement {
+//  imports {
+//    mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+//  }
+//}

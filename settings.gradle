@@ -1,5 +1,6 @@
 rootProject.name = 'arbiter'
-include 'arbiter-core'
-include 'arbiter-http'
-include 'arbiter-integration'
+include 'server'
+include 'server:arbiter-core'
+include 'server:arbiter-http'
+include 'server:arbiter-integration'
 

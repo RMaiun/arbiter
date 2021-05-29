@@ -9,6 +9,16 @@ allprojects {
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'java'
 
+  group = 'com.arbiter'
+  version = '0.0.1-SNAPSHOT'
+  sourceCompatibility = '16'
+
+  gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+      options.compilerArgs << "-Xlint:unchecked,deprecation"
+    }
+  }
+
   repositories {
     mavenCentral()
   }
@@ -42,33 +52,3 @@ allprojects {
     useJUnitPlatform()
   }
 }
-
-group = 'com.arbiter'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '16'
-
-dependencies {
-  implementation  project(':arbiter-http')
-  implementation  project(':arbiter-integration')
-}
-
-//jar {
-//  manifest {
-//    attributes(
-//        'Main-Class': 'com.arbiter.ArbiterApplication'
-//    )
-//  }
-//}
-
-bootJar {
-  enabled = true
-}
-//ext {
-//  set('testcontainersVersion', "1.15.3")
-//}
-
-//dependencyManagement {
-//  imports {
-//    mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
-//  }
-//}
