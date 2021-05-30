@@ -37,9 +37,9 @@ public class CommandReceiver implements MessageListener {
 
   @Override
   public void onMessage(Message message) {
+    var start = System.currentTimeMillis();
     var input = metadataParser.parseCommand(message.getBody());
     try {
-      log.info("/{} was called by {} ({})", input.cmd(), input.user(), input.tid());
       userRightsService.checkUserIsRegistered(input.tid());
       var processor = processors.stream()
           .filter(p -> p.commands().contains(input.cmd()))
@@ -56,6 +56,7 @@ public class CommandReceiver implements MessageListener {
       var error = OutputMessage.error(input.chatId(), msgId(), format(err));
       rabbitSender.send(error);
     }
+    log.info("/{} was called by {} ({}) [{}ms]", input.cmd(), input.user(), input.tid(), System.currentTimeMillis() - start);
   }
 
   public String format(Throwable error) {

@@ -57,6 +57,7 @@ public class RabbitConfiguration {
     container.setConnectionFactory(rabbitConnectionFactory());
     container.setQueueNames(rabbitProperties.getInputQueue());
     container.setMessageListener(new CommandReceiver(metadataParser, rabbitSender, processors, postProcessors, userRightsService));
+    container.setConcurrentConsumers(8);
     return container;
   }
 
