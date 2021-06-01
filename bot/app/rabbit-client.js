@@ -1,38 +1,31 @@
-const { MessageUpdate } = require("typegram/update");
-
-const Context = require('telegraf').Context;
-
+'use strict'
+const amqp = require('amqplib');
 const inputChannel = 'input_q';
 const outputChannel = "output_q"
-const open = require('amqplib').connect('amqp://rabbitmq:rabbitmq@localhost:5672/ukl');
-
 
 class RabbitClient{
-  async constructor() {
-    this._prodChannel = await open.createChannel()
-    this._consChannel = await open.createChannel()
-  }
 
-  async send(ctx){
-    const data = {
-      cmd: "listPlayers",
-      msgId: ctx.update.update_id,
-      chatId: ctx.chat.id,
-      tid: ctx.update.message.from.id
-    }
-    await this._prodChannel.assertQueue(inputChannel)
-    await this._prodChannel.sendToQueue(Buffer.from(JSON.stringify(data)))
+  async publish(data){
+    const connection = await amqp.connect('amqp://rabbitmq:rabbitmq@localhost:5672/ukl')
+    const prodChannel = await connection.createChannel()
+    await prodChannel.assertQueue(inputChannel, { durable: false })
+    return prodChannel.sendToQueue(inputChannel,Buffer.from(JSON.stringify(data)))
   }
 
   async initConsumer(bot){
-    await this._consChannel.assertQueue(outputChannel)
-    await this._consChannel.consume(outputChannel, function(msg){
+    const connection = await amqp.connect('amqp://rabbitmq:rabbitmq@localhost:5672/ukl')
+    const consChannel = await connection.createChannel()
+    await consChannel.assertQueue(outputChannel,{ durable: false })
+    await consChannel.consume(outputChannel, async function(msg){
       if (msg !== null) {
         console.log(msg.content.toString());
-        this._consChannel.ack(msg);
-
+        const data = JSON.parse(msg.content);
+        await bot.telegram.sendMessage(data.chatId, data.result)
+        consChannel.ack(msg);
       }
     })
   }
 
 }
+
+module.exports = {RabbitClient}

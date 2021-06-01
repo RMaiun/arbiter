@@ -1,6 +1,5 @@
 const axios = require('axios').default;
-const Context = require("telegraf").Context
-const { Update } = require('typegram')
+const { RabbitClient } = require('./rabbit-client')
 
 const startData = `
   /start - інфа про можливості бота
@@ -26,6 +25,9 @@ const startData = `
   /unsubscribe - вимкнути сповіщення
 `
 class CmdHandlers{
+  constructor() {
+    this._rc = new RabbitClient();
+  }
 
   startCmdHandler(ctx){
     ctx.reply(startData)
@@ -49,6 +51,28 @@ class CmdHandlers{
 
 
   async xlsxReportCmdHandler(ctx){
+    const x = await this.loadFile()
+    ctx.replyWithDocument({source: x, filename: "test.xlsx"})
+  }
+
+  async newsCmdHandler(ctx){
+    const cmdWithArgs = ctx.message.text.trim().split(" ");
+    cmdWithArgs.shift();
+    const msg = cmdWithArgs.join(" ")
+    const dtoIn = {
+      cmd: "/addNews",
+      chatId: ctx.chat.id,
+      tid: ctx.message.from.id,
+      user: ctx.message.from.first_name,
+      data:{
+        message: msg,
+        moderator: ctx.update.message.from.id
+      }
+    }
+    await this._rc.publish(dtoIn);
+  }
+
+  async statsCmdHandler(ctx){
     const x = await this.loadFile()
     ctx.replyWithDocument({source: x, filename: "test.xlsx"})
   }
