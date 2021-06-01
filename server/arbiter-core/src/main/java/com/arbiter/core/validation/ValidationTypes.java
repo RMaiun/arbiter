@@ -37,7 +37,7 @@ public interface ValidationTypes {
 
   ValidationType<AddPlayerDto> addPlayerValidationType = dto ->
       schema()
-          .withRule(rule(dto.tid(), "moderator", onlyNumbers()))
+          .withRule(rule(dto.tid(), "tid", onlyNumbers()))
           .withRule(requiredRule(dto.surname(), "surname", length(2, 20), onlyLetters()))
           .withRule(rule(dto.moderator(), "moderator", notEmpty()));
 
