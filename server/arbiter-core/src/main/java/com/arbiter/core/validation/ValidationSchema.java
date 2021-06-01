@@ -4,6 +4,7 @@ import com.arbiter.core.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ValidationSchema {
@@ -30,7 +31,7 @@ public class ValidationSchema {
   }
 
   void check() {
-    List<String> result = msgs.toList();
+    List<String> result = msgs.collect(Collectors.toList());
     if (!result.isEmpty()) {
       throw new ValidationException(String.join(".", result));
     }

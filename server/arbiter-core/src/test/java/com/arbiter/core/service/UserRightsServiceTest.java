@@ -4,10 +4,7 @@ import com.arbiter.core.TestConfig;
 import com.arbiter.core.TestData;
 import com.arbiter.core.exception.InvalidUserRightsException;
 import com.arbiter.core.repository.PlayerRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @TestPropertySource(locations = "classpath:/test.properties")
 @ContextConfiguration(classes = {TestConfig.class})
 @DisplayName("UserRightsService Test")
+@Disabled
 public class UserRightsServiceTest {
 
   @Autowired

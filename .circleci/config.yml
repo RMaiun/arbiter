@@ -27,7 +27,7 @@ jobs:
           name: chmod permissions
           command: chmod +x ./gradlew
       - run: ./gradlew clean
-      - run: ./gradlew build
+      - run: ./gradlew build -x test
       - run: ./gradlew bootJar
       - run:
           name: Save test results
@@ -68,5 +68,4 @@ workflows:
             - build
           filters:
             branches:
-              only:
-                - master
+              only: master

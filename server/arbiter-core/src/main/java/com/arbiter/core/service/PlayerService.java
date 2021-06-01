@@ -36,7 +36,7 @@ public class PlayerService {
     var players = playerRepository.listAll()
         .stream()
         .map(PlayerDto::fromPlayer)
-        .toList();
+        .collect(Collectors.toList());
     log.info("Found {} players", players.size());
     return new FoundAllPlayers(players);
   }

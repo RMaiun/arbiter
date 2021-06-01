@@ -24,6 +24,7 @@ allprojects {
   }
 
   sourceCompatibility = '16'
+  targetCompatibility = '16'
 
   bootJar {
     enabled = false
@@ -50,5 +51,16 @@ allprojects {
   }
   test {
     useJUnitPlatform()
+  }
+
+  compileJava {
+    options.compilerArgs += ['--enable-preview']
+  }
+  test {
+    jvmArgs '--enable-preview'
+  }
+
+  tasks.bootJar {
+    archiveFileName.set("server.jar")
   }
 }

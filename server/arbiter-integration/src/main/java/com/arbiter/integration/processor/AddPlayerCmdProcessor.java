@@ -35,7 +35,8 @@ public class AddPlayerCmdProcessor implements CommandProcessor {
   }
 
   private String format(IdDto data) {
+    var id = data.id().substring(data.id().length() - 4);
     return String.format("%s New player was stored with id %s %s",
-        PREFIX, data.id(), SUFFIX);
+        PREFIX, id, SUFFIX);
   }
 }
