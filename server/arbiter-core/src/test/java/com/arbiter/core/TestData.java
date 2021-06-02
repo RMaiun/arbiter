@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 public interface TestData {
 
   static List<Player> testPlayers() {
-    Player p1 = new Player("1L", "player1", "test1", true,false);
-    Player p2 = new Player("2L", "player2", null, false,false);
-    Player p3 = new Player("3L", "player3", null, false,false);
-    Player p4 = new Player("4L", "player4", null, false,false);
+    Player p1 = new Player("1L", "player1", "test1", true,false, true);
+    Player p2 = new Player("2L", "player2", null, false,false, true);
+    Player p3 = new Player("3L", "player3", null, false,false, true);
+    Player p4 = new Player("4L", "player4", null, false,false, true);
     return Arrays.asList(p1, p2, p3, p4);
   }
 
@@ -31,7 +31,7 @@ public interface TestData {
 
   static List<Player> players(List<String> surnames) {
     return surnames.stream()
-        .map(s -> new Player(surnames.indexOf(s) + "1L", s, null, false,false))
+        .map(s -> new Player(surnames.indexOf(s) + "1L", s, null, false,false, true))
         .collect(Collectors.toList());
   }
 

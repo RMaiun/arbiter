@@ -4,6 +4,8 @@ import static com.arbiter.core.validation.Validator.validate;
 
 import com.arbiter.core.domain.Player;
 import com.arbiter.core.dto.IdDto;
+import com.arbiter.core.dto.player.AbsentPlayersDto;
+import com.arbiter.core.dto.player.ActivatePlayersDto;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.player.FoundAllPlayers;
 import com.arbiter.core.dto.player.PlayerDto;
@@ -12,8 +14,10 @@ import com.arbiter.core.exception.PlayerNotFoundException;
 import com.arbiter.core.exception.PlayersNotFoundException;
 import com.arbiter.core.repository.PlayerRepository;
 import com.arbiter.core.validation.ValidationTypes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -47,6 +51,23 @@ public class PlayerService {
         .collect(Collectors.toList());
     log.info("Found {} players", surnames.size());
     return surnames;
+  }
+
+  public AbsentPlayersDto updateActiveStatusPlayers(ActivatePlayersDto dto, boolean activate) {
+    List<String> absentPlayers = new ArrayList<>();
+    if (CollectionUtils.isNotEmpty(dto.players())) {
+      dto.players().forEach(surname -> {
+        var player = playerRepository.getPlayer(surname.toLowerCase());
+        if (player.isPresent()) {
+          var p = player.get();
+          p.setActive(activate);
+          playerRepository.updatePlayer(p);
+        } else {
+          absentPlayers.add(surname);
+        }
+      });
+    }
+    return new AbsentPlayersDto(absentPlayers);
   }
 
   public List<Player> checkPlayersExist(List<String> surnameList) {
@@ -88,7 +109,7 @@ public class PlayerService {
   }
 
   private String savePlayer(AddPlayerDto dto) {
-    Player player = new Player(null, dto.surname().toLowerCase(), dto.tid(), dto.admin(), false);
+    Player player = new Player(null, dto.surname().toLowerCase(), dto.tid(), dto.admin(), false, true);
     return playerRepository.savePlayer(player).getId();
   }
 

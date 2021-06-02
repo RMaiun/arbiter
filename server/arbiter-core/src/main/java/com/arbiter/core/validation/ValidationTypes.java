@@ -1,14 +1,14 @@
 package com.arbiter.core.validation;
 
-import static com.arbiter.core.validation.NumberValidationFunctions.intBetween;
-import static com.arbiter.core.validation.StringValidationFunctions.isSeason;
-import static com.arbiter.core.validation.StringValidationFunctions.length;
-import static com.arbiter.core.validation.StringValidationFunctions.notEmpty;
-import static com.arbiter.core.validation.StringValidationFunctions.onlyLetters;
-import static com.arbiter.core.validation.StringValidationFunctions.onlyNumbers;
 import static com.arbiter.core.validation.ValidationRule.requiredRule;
 import static com.arbiter.core.validation.ValidationRule.rule;
 import static com.arbiter.core.validation.ValidationSchema.schema;
+import static com.arbiter.core.validation.functions.NumberValidationFunctions.intBetween;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.isSeason;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.length;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.notEmpty;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyLetters;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyNumbers;
 
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.round.AddRoundDto;

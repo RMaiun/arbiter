@@ -30,7 +30,7 @@ public class PlayerRepository {
   }
 
   public List<Player> findPlayers(List<String> surnames) {
-    return template.find(new Query().addCriteria(where("surname").in(surnames)), Player.class);
+    return template.find(new Query().addCriteria(where("surname").in(surnames).and("active").is(true)), Player.class);
   }
 
   public Optional<Player> getPlayer(String name) {
