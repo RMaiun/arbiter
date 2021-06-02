@@ -2,6 +2,7 @@ package com.arbiter.core.validation;
 
 import static java.util.Objects.isNull;
 
+import com.arbiter.core.validation.functions.ValidationFunction;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;

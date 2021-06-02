@@ -1,4 +1,4 @@
-package com.arbiter.core.validation;
+package com.arbiter.core.validation.functions;
 
 import java.util.Collections;
 import java.util.Objects;

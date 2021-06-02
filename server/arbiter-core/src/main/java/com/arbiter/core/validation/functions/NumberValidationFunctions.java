@@ -1,4 +1,4 @@
-package com.arbiter.core.validation;
+package com.arbiter.core.validation.functions;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;

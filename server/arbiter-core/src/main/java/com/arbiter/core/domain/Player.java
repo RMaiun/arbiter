@@ -13,16 +13,18 @@ public class Player {
   private String tid;
   private boolean admin;
   private boolean notificationsEnabled;
+  private boolean active;
 
   public Player() {
   }
 
-  public Player(String id, String surname, String tid, boolean admin, boolean notificationsEnabled) {
+  public Player(String id, String surname, String tid, boolean admin, boolean notificationsEnabled, boolean active) {
     this.id = id;
     this.surname = surname;
     this.tid = tid;
     this.admin = admin;
     this.notificationsEnabled = notificationsEnabled;
+    this.active = active;
   }
 
   public String getId() {
@@ -63,5 +65,13 @@ public class Player {
 
   public void setNotificationsEnabled(boolean notificationsEnabled) {
     this.notificationsEnabled = notificationsEnabled;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 }

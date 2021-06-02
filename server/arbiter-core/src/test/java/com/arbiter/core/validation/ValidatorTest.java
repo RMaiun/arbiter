@@ -1,9 +1,9 @@
 package com.arbiter.core.validation;
 
 
-import static com.arbiter.core.validation.NumberValidationFunctions.intBetween;
-import static com.arbiter.core.validation.StringValidationFunctions.length;
-import static com.arbiter.core.validation.StringValidationFunctions.oneOf;
+import static com.arbiter.core.validation.functions.NumberValidationFunctions.intBetween;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.length;
+import static com.arbiter.core.validation.functions.StringValidationFunctions.oneOf;
 import static com.arbiter.core.validation.ValidationRule.requiredRule;
 import static com.arbiter.core.validation.ValidationRule.rule;
 import static com.arbiter.core.validation.ValidationSchema.schema;

@@ -54,7 +54,7 @@ public class AddPlayerCmdProcessorTest {
 
   @Test
   public void addPlayerPrivilegedHdsTest() throws JsonProcessingException {
-    Player testPlayer = new Player("123", "somePlayer", "xxx", false, false);
+    Player testPlayer = new Player("123", "somePlayer", "xxx", false, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(testPlayer);
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "111", false, "test1"));
@@ -71,8 +71,8 @@ public class AddPlayerCmdProcessorTest {
 
   @Test
   public void addPlayerHdsTest() throws JsonProcessingException {
-    Player addedPlayer = new Player("123", "somePlayer", "111111", false, false);
-    Player moderator = new Player("456", "moderator", "222222", true, false);
+    Player addedPlayer = new Player("123", "somePlayer", "111111", false, false, true);
+    Player moderator = new Player("456", "moderator", "222222", true, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(addedPlayer);
     when(playerRepository.listAll()).thenReturn(List.of(moderator));
@@ -90,8 +90,8 @@ public class AddPlayerCmdProcessorTest {
 
   @Test
   public void addPlayerAuthExceptionTest() throws JsonProcessingException {
-    Player addedPlayer = new Player("123", "somePlayer", "111111", false, false);
-    Player moderator = new Player("456", "moderator", "222222", false, false);
+    Player addedPlayer = new Player("123", "somePlayer", "111111", false, false, true);
+    Player moderator = new Player("456", "moderator", "222222", false, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(addedPlayer);
     when(playerRepository.listAll()).thenReturn(List.of(moderator));
@@ -102,8 +102,8 @@ public class AddPlayerCmdProcessorTest {
 
   @Test
   public void addPlayerTechnicalValidationFailedTest() throws JsonProcessingException {
-    Player addedPlayer = new Player("123", "somePlayer", "111111", false, false);
-    Player moderator = new Player("456", "moderator", "222222", false, false);
+    Player addedPlayer = new Player("123", "somePlayer", "111111", false, false, true);
+    Player moderator = new Player("456", "moderator", "222222", false, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(addedPlayer);
     when(playerRepository.listAll()).thenReturn(List.of(moderator));
