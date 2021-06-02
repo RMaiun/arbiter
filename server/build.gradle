@@ -1,6 +1,6 @@
 dependencies {
   implementation  project(':server:arbiter-http')
-  implementation  project(':server:arbiter-integration')
+  implementation  project(':server:arbiter-flows')
 }
 
 //jar {
