@@ -54,7 +54,7 @@ jobs:
           at: /tmp/workspace
       - setup_remote_docker
       - run: docker load -i /tmp/workspace/image.tar
-      - run: cat /dev/null | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run: cat /dev/null | docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
       - run: cat /dev/null | docker push $IMAGE_NAME:latest
 
 workflows:
