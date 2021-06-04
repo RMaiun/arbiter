@@ -16,13 +16,13 @@ jobs:
 
     steps:
       - checkout
-#      - restore_cache:
-#          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      # Download and cache dependencies
-#      - save_cache:
-#          paths:
-#            - ~/.gradle/wrapper
-#          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+#       Download and cache dependencies
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - run:
           name: chmod permissions
           command: chmod +x ./gradlew
