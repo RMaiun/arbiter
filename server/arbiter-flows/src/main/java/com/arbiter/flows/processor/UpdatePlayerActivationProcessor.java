@@ -24,7 +24,7 @@ public class UpdatePlayerActivationProcessor implements CommandProcessor {
   @Override
   public OutputMessage process(BotInputMessage input, int msgId) {
     var data = objectMapper.convertValue(input.data(), ActivatePlayersDto.class);
-    var activate = ACTIVATE_CMD.equals(input.chatId());
+    var activate = ACTIVATE_CMD.equals(input.cmd());
     var dtoOut = playerService.updateActiveStatusPlayers(data, activate);
     var result = format(dtoOut, activate);
     return OutputMessage.ok(input.chatId(), msgId, result);

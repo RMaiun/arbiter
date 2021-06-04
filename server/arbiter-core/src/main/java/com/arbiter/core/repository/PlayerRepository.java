@@ -23,7 +23,7 @@ public class PlayerRepository {
   }
 
   public List<Player> listAll() {
-    return template.findAll(Player.class)
+    return template.find(new Query().addCriteria(where("active").is(true)),Player.class)
         .stream()
         .sorted(Comparator.comparing(Player::getId))
         .collect(Collectors.toList());

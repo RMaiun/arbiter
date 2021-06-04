@@ -33,10 +33,12 @@ public class ListPlayersCmdProcessor implements CommandProcessor {
   }
 
   private String format(FoundAllPlayers data) {
+    if (data.players().isEmpty()) {
+      return String.format("%sNo active players were found%s", PREFIX, SUFFIX);
+    }
     String players = IntStream.range(0, data.players().size())
         .mapToObj(i -> String.format("%d|%s", i + 1, StringUtils.capitalize(data.players().get(i).surname())))
         .collect(Collectors.joining("\n"));
     return String.format("%s%s%s", PREFIX, players, SUFFIX);
   }
-
 }
