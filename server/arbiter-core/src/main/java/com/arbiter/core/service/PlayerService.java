@@ -36,21 +36,15 @@ public class PlayerService {
     this.userRightsService = userRightsService;
   }
 
-  public FoundAllPlayers findAllPlayers() {
-    var players = playerRepository.listAll()
+  public FoundAllPlayers findAllPlayers(String moderatorTid) {
+    Player moderator = findPlayerByTid(moderatorTid);
+    var onlyActive = !moderator.isAdmin();
+    var players = playerRepository.listAll(onlyActive)
         .stream()
         .map(PlayerDto::fromPlayer)
         .collect(Collectors.toList());
     log.info("Found {} players", players.size());
     return new FoundAllPlayers(players);
-  }
-
-  public List<String> findAllPlayerNames() {
-    var surnames = playerRepository.listAll().stream()
-        .map(Player::getSurname)
-        .collect(Collectors.toList());
-    log.info("Found {} players", surnames.size());
-    return surnames;
   }
 
   public AbsentPlayersDto updateActiveStatusPlayers(ActivatePlayersDto dto, boolean activate) {

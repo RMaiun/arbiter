@@ -22,9 +22,11 @@ public class PlayerRepository {
     this.template = template;
   }
 
-  public List<Player> listAll() {
-    return template.find(new Query().addCriteria(where("active").is(true)),Player.class)
-        .stream()
+  public List<Player> listAll(boolean onlyActive) {
+    var foundList = onlyActive
+        ? template.find(new Query().addCriteria(where("active").is(true)), Player.class)
+        : template.findAll(Player.class);
+    return foundList.stream()
         .sorted(Comparator.comparing(Player::getId))
         .collect(Collectors.toList());
   }

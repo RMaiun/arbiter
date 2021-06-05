@@ -23,7 +23,7 @@ public class UserRightsService {
 
   public void checkUserIsAdmin(String tid) {
     if (!tid.equals(appProperties.privileged)) {
-      var players = playerRepository.listAll();
+      var players = playerRepository.listAll(true);
       checkAdminPermissions(players, tid);
     }
   }

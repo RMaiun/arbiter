@@ -75,7 +75,7 @@ public class AddPlayerCmdProcessorTest {
     Player moderator = new Player("456", "moderator", "222222", true, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(addedPlayer);
-    when(playerRepository.listAll()).thenReturn(List.of(moderator));
+    when(playerRepository.listAll(any())).thenReturn(List.of(moderator));
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "111111", false, "222222"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "0", "notUsed", "TestUserName", jsonData);
     OutputMessage dtoOut = addPlayerCmdProcessor.process(dtoIn, 1);
@@ -94,7 +94,7 @@ public class AddPlayerCmdProcessorTest {
     Player moderator = new Player("456", "moderator", "222222", false, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(addedPlayer);
-    when(playerRepository.listAll()).thenReturn(List.of(moderator));
+    when(playerRepository.listAll(any())).thenReturn(List.of(moderator));
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "111111", false, "222222"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "0", "notUsed", "TestUserName", jsonData);
     assertThrows(InvalidUserRightsException.class, () -> addPlayerCmdProcessor.process(dtoIn, 1));
@@ -106,7 +106,7 @@ public class AddPlayerCmdProcessorTest {
     Player moderator = new Player("456", "moderator", "222222", false, false, true);
     when(playerRepository.getPlayer(any())).thenReturn(Optional.empty());
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(addedPlayer);
-    when(playerRepository.listAll()).thenReturn(List.of(moderator));
+    when(playerRepository.listAll(any())).thenReturn(List.of(moderator));
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "wrongTid", false, "222222"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "0", "notUsed", "TestUserName", jsonData);
     assertThrows(ValidationException.class, () -> addPlayerCmdProcessor.process(dtoIn, 1));

@@ -53,7 +53,7 @@ public class DumpExporter {
   public BinaryFileDto export(ZonedDateTime before, String moderator) {
     userRightsService.checkUserIsAdmin(moderator);
     var seasons = seasonRepository.listAll();
-    var players = playerRepository.listAll();
+    var players = playerRepository.listAll(false);
     var rounds = roundRepository.listLastRoundsBeforeDate(before);
     return prepareZipArchive(seasons, players, rounds);
   }
