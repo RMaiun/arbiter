@@ -36,9 +36,7 @@ public class PlayerService {
     this.userRightsService = userRightsService;
   }
 
-  public FoundAllPlayers findAllPlayers(String moderatorTid) {
-    Player moderator = findPlayerByTid(moderatorTid);
-    var onlyActive = !moderator.isAdmin();
+  public FoundAllPlayers findAllPlayers(boolean onlyActive) {
     var players = playerRepository.listAll(onlyActive)
         .stream()
         .map(PlayerDto::fromPlayer)

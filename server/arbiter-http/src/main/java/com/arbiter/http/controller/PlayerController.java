@@ -22,7 +22,7 @@ public class PlayerController {
 
   @GetMapping("/all")
   public FoundAllPlayers findAllPlayers() {
-    return playerService.findAllPlayers();
+    return playerService.findAllPlayers(true);
   }
 
   @PostMapping("/add")

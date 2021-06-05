@@ -84,7 +84,7 @@ public class SeasonStatsSender {
 
   private List<PlayerRank> findPlayersWithRanks(String season) {
     var stats = statisticsService.seasonShortInfoStatistics(season);
-    var players = playerService.findAllPlayers();
+    var players = playerService.findAllPlayers(true);
     var rounds = roundsService.findAllRounds(season);
     return preparePlayerRanks(stats, players, rounds);
   }

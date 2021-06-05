@@ -24,8 +24,8 @@ public class ListPlayersCmdProcessor implements CommandProcessor {
 
   @Override
   public OutputMessage process(BotInputMessage input, int msgId) {
-    var data = playerService.findAllPlayers(input.tid());
     var moderator = playerService.findPlayerByTid(input.tid());
+    var data = playerService.findAllPlayers(!moderator.isAdmin());
     var str = format(data, moderator);
     return OutputMessage.ok(input.chatId(), msgId, str);
   }
