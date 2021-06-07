@@ -36,7 +36,7 @@ public class RoundRepository {
   public Round saveRound(Round round) {
     return template.insert(round);
   }
-  public int bulkSaveRounds(List<Round> rounds) {
+  public int bulkSave(List<Round> rounds) {
     return template.bulkOps(BulkMode.ORDERED,Round.class).insert(rounds).execute().getInsertedCount();
   }
 

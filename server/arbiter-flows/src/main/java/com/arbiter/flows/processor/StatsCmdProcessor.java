@@ -55,7 +55,7 @@ public class StatsCmdProcessor implements CommandProcessor {
             .collect(Collectors.joining(LINE_SEPARATOR));
 
     String bestStreak = String.format("%s: %d games in row", capitalize(data.bestStreak().player()), data.bestStreak().games());
-    String worstStreak = String.format("%s: %d games in row", capitalize(data.worstStreak().player()), data.bestStreak().games());
+    String worstStreak = String.format("%s: %d games in row", capitalize(data.worstStreak().player()), data.worstStreak().games());
     String separator = StringUtils.repeat("-", 30);
     return PREFIX
         + "Season: " + data.season() + LINE_SEPARATOR

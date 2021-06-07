@@ -4,10 +4,12 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import com.arbiter.core.domain.Player;
+import com.arbiter.core.domain.Round;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -59,5 +61,9 @@ public class PlayerRepository {
   public Long removeByTid(String tid) {
     var query = new Query(Criteria.where("tid").is(tid));
     return template.remove(query, Player.class).getDeletedCount();
+  }
+
+  public int bulkSave(List<Player> players) {
+    return template.bulkOps(BulkMode.ORDERED,Player.class).insert(players).execute().getInsertedCount();
   }
 }

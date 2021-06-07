@@ -59,6 +59,7 @@ public class DumpImporter {
 
   private ImportDumpDto storeDumpData(ImportDumpData data) {
     var totalDeleted = clearTables();
+    logger.info("Total deleted rows before import = {}", totalDeleted);
     var seasonsStored = importSeasons(data.seasonList());
     var playersStored = importPlayers(data.playersList());
     var roundsStored = importRounds(data.roundsList());
@@ -130,19 +131,15 @@ public class DumpImporter {
     return rounds.stream()
         .collect(Collectors.groupingBy(Round::getSeason))
         .entrySet().stream()
-        .map(e -> Pair.of(e.getKey(), roundRepository.bulkSaveRounds(e.getValue())))
+        .map(e -> Pair.of(e.getKey(), roundRepository.bulkSave(e.getValue())))
         .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
   }
 
   private long importSeasons(List<Season> seasons) {
-    return seasons.stream()
-        .map(seasonRepository::saveSeason)
-        .count();
+    return seasonRepository.bulkSave(seasons);
   }
 
-  private long importPlayers(List<Player> seasons) {
-    return seasons.stream()
-        .map(playerRepository::savePlayer)
-        .count();
+  private long importPlayers(List<Player> players) {
+    return playerRepository.bulkSave(players);
   }
 }

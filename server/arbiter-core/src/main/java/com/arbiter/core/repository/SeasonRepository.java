@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -46,5 +47,9 @@ public class SeasonRepository {
     Criteria criteria = Criteria.where(ATTR_SEASON_END_NOTIFICATION).is(null);
     Query query = new Query(criteria).with(Sort.by(Direction.ASC, ATTR_SEASON_END_NOTIFICATION));
     return ofNullable(template.findOne(query, Season.class));
+  }
+
+  public int bulkSave(List<Season> seasons) {
+    return template.bulkOps(BulkMode.ORDERED, Season.class).insert(seasons).execute().getInsertedCount();
   }
 }
