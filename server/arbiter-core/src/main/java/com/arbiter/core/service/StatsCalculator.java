@@ -75,9 +75,11 @@ public class StatsCalculator {
 
   private String preparePercentageStats(Entry<String, Integer> entry, Map<String, BigDecimal> winRounds) {
     BigDecimal foundWins = winRounds.getOrDefault(entry.getKey(), BigDecimal.ZERO);
-    BigDecimal result = foundWins.divide(BigDecimal.valueOf(entry.getValue()), new MathContext(3, RoundingMode.HALF_EVEN));
+    BigDecimal result = foundWins.divide(BigDecimal.valueOf(entry.getValue()), new MathContext(4, RoundingMode.HALF_EVEN));
 
-    BigDecimal roundedResult = result.setScale(3, RoundingMode.HALF_EVEN);
+    BigDecimal resultInPercents = result.multiply(BigDecimal.valueOf(100));
+    BigDecimal roundedResult = resultInPercents.setScale(2, RoundingMode.HALF_EVEN);
+
     return roundedResult.toString();
   }
 

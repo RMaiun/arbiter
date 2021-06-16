@@ -51,7 +51,7 @@ public class StatsCmdProcessor implements CommandProcessor {
         : IntStream.range(0, data.playersRating().size())
             .mapToObj(i -> String.format("%d. %s %s", i + 1,
                 capitalize(data.playersRating().get(i).surname()),
-                data.playersRating().get(i).score()))
+                ratingToPercents(data.playersRating().get(i).score())))
             .collect(Collectors.joining(LINE_SEPARATOR));
 
     String bestStreak = String.format("%s: %d games in row", capitalize(data.bestStreak().player()), data.bestStreak().games());
@@ -62,7 +62,7 @@ public class StatsCmdProcessor implements CommandProcessor {
         + "Games played: " + data.gamesPlayed() + LINE_SEPARATOR
         + "Days till season end: " + data.daysToSeasonEnd() + LINE_SEPARATOR
         + separator + LINE_SEPARATOR
-        + "Current Rating:" + LINE_SEPARATOR
+        + "Current Win Rates:" + LINE_SEPARATOR
         + ratings + LINE_SEPARATOR
         + separator + LINE_SEPARATOR
         + "Best Streak:" + LINE_SEPARATOR
@@ -71,5 +71,9 @@ public class StatsCmdProcessor implements CommandProcessor {
         + "Worst Streak:" + LINE_SEPARATOR
         + worstStreak + LINE_SEPARATOR
         + SUFFIX;
+  }
+
+  private String ratingToPercents(String rating) {
+    return rating + PERCENT;
   }
 }

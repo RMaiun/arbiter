@@ -9,4 +9,5 @@ public interface Constants {
   String SUFFIX = "```";
   String PREFIX = SUFFIX + LINE_SEPARATOR;
   String DEFAULT_RESULT = "";
+  String PERCENT = "%";
 }
