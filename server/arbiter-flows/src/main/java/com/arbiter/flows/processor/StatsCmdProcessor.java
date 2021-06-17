@@ -1,5 +1,6 @@
 package com.arbiter.flows.processor;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
 import com.arbiter.core.config.AppProperties;
@@ -64,6 +65,7 @@ public class StatsCmdProcessor implements CommandProcessor {
         + separator + LINE_SEPARATOR
         + "Current Win Rates:" + LINE_SEPARATOR
         + ratings + LINE_SEPARATOR
+        + formatUnrankedPlayers(data, separator)
         + separator + LINE_SEPARATOR
         + "Best Streak:" + LINE_SEPARATOR
         + bestStreak + LINE_SEPARATOR
@@ -71,6 +73,18 @@ public class StatsCmdProcessor implements CommandProcessor {
         + "Worst Streak:" + LINE_SEPARATOR
         + worstStreak + LINE_SEPARATOR
         + SUFFIX;
+  }
+
+  private String formatUnrankedPlayers(SeasonShortStats data, String separator) {
+    if (data.unrankedStats().isEmpty()) {
+      return EMPTY;
+    }
+    String unrankedData = data.unrankedStats().stream()
+        .map(us -> String.format("- %s +%d", capitalize(us.player()), us.gamesToPlay()))
+        .collect(Collectors.joining(LINE_SEPARATOR));
+    return separator + LINE_SEPARATOR
+        + "Need to play more games:" + LINE_SEPARATOR
+        + unrankedData + LINE_SEPARATOR;
   }
 
   private String ratingToPercents(String rating) {

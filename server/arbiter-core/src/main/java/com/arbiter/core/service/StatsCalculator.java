@@ -1,5 +1,9 @@
 package com.arbiter.core.service;
 
+import static java.util.Collections.*;
+import static java.util.Comparator.*;
+import static java.util.function.Function.*;
+import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.reducing;
@@ -15,6 +19,7 @@ import com.arbiter.core.dto.stats.SeasonStatsRows;
 import com.arbiter.core.dto.stats.StatsCalcData;
 import com.arbiter.core.dto.stats.Streak;
 import com.arbiter.core.dto.round.FullRound;
+import com.arbiter.core.dto.stats.UnrankedStats;
 import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.utils.SeasonUtils;
 import io.vavr.Tuple4;
@@ -22,12 +27,14 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -53,11 +60,15 @@ public class StatsCalculator {
         ? percentagePlayersStats(rounds)
         : pointsPlayersStats(rounds);
 
+    List<UnrankedStats> unrankedStats = AlgorithmType.PERCENTAGE == algorithmType
+        ? prepareUnrankedStats(rounds)
+        : emptyList();
+
     Pair<Optional<Streak>, Optional<Streak>> optionalOptionalPair = calculateStreaks(rounds);
     var best = optionalOptionalPair.getLeft().orElse(null);
     var worst = optionalOptionalPair.getRight().orElse(null);
 
-    return new SeasonShortStats(seasonName, topPlayers, rounds.size(), daysToSeasonEnd, best, worst);
+    return new SeasonShortStats(seasonName, topPlayers, unrankedStats, rounds.size(), daysToSeasonEnd, best, worst);
   }
 
   private List<PlayerStats> percentagePlayersStats(List<FullRound> rounds) {
@@ -70,6 +81,18 @@ public class StatsCalculator {
     return allRounds.entrySet().stream()
         .map(e -> new PlayerStats(e.getKey(), preparePercentageStats(e, winRounds), e.getValue()))
         .sorted(Comparator.comparing(ps -> new BigDecimal(ps.score()), Comparator.reverseOrder()))
+        .collect(toList());
+  }
+
+  private List<UnrankedStats> prepareUnrankedStats(List<FullRound> rounds) {
+    return rounds.stream()
+        .flatMap(r -> Stream.of(r.winner1(), r.winner2(), r.loser1(), r.loser2()))
+        .collect(groupingBy(identity(), counting()))
+        .entrySet()
+        .stream()
+        .filter(e -> e.getValue() < appProps.expectedGames)
+        .map(e -> new UnrankedStats(e.getKey(), appProps.expectedGames - e.getValue().intValue()))
+        .sorted(comparing(UnrankedStats::gamesToPlay))
         .collect(toList());
   }
 
@@ -100,7 +123,7 @@ public class StatsCalculator {
     Map<String, Tuple4<Integer, Integer, Integer, Integer>> results = rounds.stream()
         .flatMap(r -> Stream.of(r.winner1(), r.winner2(), r.loser1(), r.loser2()))
         .distinct()
-        .collect(Collectors.toMap(x -> x, x -> new Tuple4<>(0, 0, 0, 0)));
+        .collect(toMap(x -> x, x -> new Tuple4<>(0, 0, 0, 0)));
 
     rounds.forEach(r -> {
       checkStreak(results, r.winner1(), 1);
@@ -111,11 +134,11 @@ public class StatsCalculator {
 
     Optional<Streak> best = results.entrySet().stream()
         .map(e -> new Streak(e.getKey(), e.getValue()._2))
-        .max(Comparator.comparing(Streak::games));
+        .max(comparing(Streak::games));
 
     Optional<Streak> worst = results.entrySet().stream()
         .map(e -> new Streak(e.getKey(), e.getValue()._4))
-        .max(Comparator.comparing(Streak::games));
+        .max(comparing(Streak::games));
     return Pair.of(best, worst);
   }
 
@@ -137,13 +160,13 @@ public class StatsCalculator {
     List<RatingWithGames> playerStats = calculatePointsForPlayers(rounds, false);
 
     List<String> headers = playerStats.stream()
-        .sorted(Comparator.comparing(RatingWithGames::player))
+        .sorted(comparing(RatingWithGames::player))
         .map(RatingWithGames::player)
         .collect(toList());
 
     List<Integer> totals = playerStats
         .stream()
-        .sorted(Comparator.comparing(RatingWithGames::player))
+        .sorted(comparing(RatingWithGames::player))
         .map(RatingWithGames::rating)
         .collect(toList());
 
