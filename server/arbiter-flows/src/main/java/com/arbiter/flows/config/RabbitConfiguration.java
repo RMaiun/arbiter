@@ -15,6 +15,7 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.AlwaysRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
@@ -41,6 +42,7 @@ public class RabbitConfiguration {
   public RabbitTemplate rabbitTemplate(ConnectionFactory rabbitConnectionFactory) {
     var rabbitTemplate = new RabbitTemplate(rabbitConnectionFactory);
     RetryTemplate retryTemplate = new RetryTemplate();
+    retryTemplate.setRetryPolicy(new AlwaysRetryPolicy());
     ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
     backOffPolicy.setInitialInterval(500);
     backOffPolicy.setMultiplier(10.0);
