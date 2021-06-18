@@ -10,9 +10,11 @@ import static com.arbiter.core.validation.functions.StringValidationFunctions.no
 import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyLetters;
 import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyNumbers;
 
+import com.arbiter.core.dto.player.AddAchievementDto;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.round.AddRoundDto;
 import com.arbiter.core.dto.round.FindLastRoundsDto;
+import com.arbiter.core.dto.round.GetRoundDto;
 import com.arbiter.core.dto.stats.GenerateStatsDocumentDto;
 import com.arbiter.core.dto.subscription.LinkTidDto;
 import com.arbiter.core.dto.subscription.SubscriptionActionDto;
@@ -31,6 +33,10 @@ public interface ValidationTypes {
           .withRule(requiredRule(dto.l1(), "l1", notEmpty(), onlyLetters()))
           .withRule(requiredRule(dto.l2(), "l2", notEmpty(), onlyLetters()))
           .withRule(rule(dto.moderator(), "moderator", notEmpty()));
+
+  ValidationType<GetRoundDto> getRoundValidationType = dto ->
+      schema()
+          .withRule(requiredRule(dto.roundId(), "roundId", notEmpty()));
 
   ValidationType<String> seasonValidationType = dto ->
       schema().withRule(requiredRule(dto, "season", isSeason()));
@@ -54,5 +60,10 @@ public interface ValidationTypes {
   ValidationType<SubscriptionActionDto> subscriptionActionValidationType = dto ->
       schema()
           .withRule(rule(dto.tid(), "moderator", notEmpty(), onlyNumbers()));
+
+  ValidationType<AddAchievementDto> addAchievementDtoType = dto ->
+      schema()
+          .withRule(rule(dto.playerName(), "playerName", notEmpty(), onlyLetters()))
+          .withRule(rule(dto.achievementCode(), "achievementCode", notEmpty()));
 
 }

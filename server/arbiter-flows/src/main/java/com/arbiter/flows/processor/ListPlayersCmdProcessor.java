@@ -2,7 +2,7 @@ package com.arbiter.flows.processor;
 
 
 import com.arbiter.core.domain.Player;
-import com.arbiter.core.dto.player.FoundAllPlayers;
+import com.arbiter.core.dto.player.FoundPlayers;
 import com.arbiter.core.dto.player.PlayerDto;
 import com.arbiter.core.service.PlayerService;
 import com.arbiter.flows.dto.BotInputMessage;
@@ -35,7 +35,7 @@ public class ListPlayersCmdProcessor implements CommandProcessor {
     return List.of(LIST_PLAYERS_CMD);
   }
 
-  private String format(FoundAllPlayers data, Player moderator) {
+  private String format(FoundPlayers data, Player moderator) {
     if (data.players().isEmpty()) {
       return String.format("%sNo active players were found%s", PREFIX, SUFFIX);
     }

@@ -9,6 +9,8 @@ import com.arbiter.core.dto.round.AddRoundDto;
 import com.arbiter.core.dto.round.FindLastRoundsDto;
 import com.arbiter.core.dto.round.FoundLastRounds;
 import com.arbiter.core.dto.round.FullRound;
+import com.arbiter.core.dto.round.GetRoundDto;
+import com.arbiter.core.exception.RoundNotFoundException;
 import com.arbiter.core.exception.SamePlayersInRoundException;
 import com.arbiter.core.repository.RoundRepository;
 import com.arbiter.core.utils.DateUtils;
@@ -18,6 +20,7 @@ import com.arbiter.core.validation.Validator;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +63,13 @@ public class RoundsService {
     var round = new Round(null, dto.w1(), dto.w2(), dto.l1(), dto.l2(), dto.shutout(), season.getName(), DateUtils.now());
     var saveRound = roundRepository.saveRound(round);
     return new IdDto(saveRound.getId());
+  }
+
+  public FullRound getRound(GetRoundDto dto) {
+    Validator.validate(dto, ValidationTypes.getRoundValidationType);
+    Round round = Optional.ofNullable(roundRepository.getById(dto.roundId()))
+        .orElseThrow(() -> new RoundNotFoundException(dto.roundId()));
+    return FullRound.fromDomain(round);
   }
 
   private void checkAllPlayersAreDifferent(AddRoundDto dto) {

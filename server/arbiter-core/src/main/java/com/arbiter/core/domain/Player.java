@@ -1,4 +1,6 @@
 package com.arbiter.core.domain;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,6 +16,7 @@ public class Player {
   private boolean admin;
   private boolean notificationsEnabled;
   private boolean active;
+  private List<Achievement> achievements;
 
   public Player() {
   }
@@ -25,6 +28,7 @@ public class Player {
     this.admin = admin;
     this.notificationsEnabled = notificationsEnabled;
     this.active = active;
+    this.achievements = new ArrayList<>();
   }
 
   public String getId() {
@@ -73,5 +77,13 @@ public class Player {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public List<Achievement> getAchievements() {
+    return achievements;
+  }
+
+  public void setAchievements(List<Achievement> achievements) {
+    this.achievements = achievements;
   }
 }

@@ -26,6 +26,10 @@ public class RoundRepository {
     return template.find(new Query().addCriteria(where("season").is(season)), Round.class);
   }
 
+  public Round getById(String id) {
+    return template.findOne(new Query().addCriteria(where("_id").is(id)), Round.class);
+  }
+
   public List<Round> listLastRoundsBySeason(String season, int roundsNum) {
     Criteria criteria = Criteria.where("season").is(season);
     Query query = new Query(criteria)
@@ -36,8 +40,9 @@ public class RoundRepository {
   public Round saveRound(Round round) {
     return template.insert(round);
   }
+
   public int bulkSave(List<Round> rounds) {
-    return template.bulkOps(BulkMode.ORDERED,Round.class).insert(rounds).execute().getInsertedCount();
+    return template.bulkOps(BulkMode.ORDERED, Round.class).insert(rounds).execute().getInsertedCount();
   }
 
   public List<Round> listLastRoundsBeforeDate(ZonedDateTime before) {

@@ -11,7 +11,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
 
 import com.arbiter.core.config.AppProperties;
-import com.arbiter.core.dto.player.FoundAllPlayers;
+import com.arbiter.core.dto.player.FoundPlayers;
 import com.arbiter.core.dto.player.PlayerDto;
 import com.arbiter.core.dto.player.PlayerRank;
 import com.arbiter.core.dto.round.FullRound;
@@ -89,7 +89,7 @@ public class SeasonStatsSender {
     return preparePlayerRanks(stats, players, rounds);
   }
 
-  private List<PlayerRank> preparePlayerRanks(SeasonShortStats stats, FoundAllPlayers allPlayers, List<FullRound> rounds) {
+  private List<PlayerRank> preparePlayerRanks(SeasonShortStats stats, FoundPlayers allPlayers, List<FullRound> rounds) {
     List<String> participatedSurnames = rounds.stream()
         .flatMap(fr -> Stream.of(fr.winner1(), fr.winner2(), fr.loser1(), fr.loser2()))
         .distinct()

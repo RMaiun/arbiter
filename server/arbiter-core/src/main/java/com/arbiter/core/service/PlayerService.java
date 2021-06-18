@@ -2,17 +2,20 @@ package com.arbiter.core.service;
 
 import static com.arbiter.core.validation.Validator.validate;
 
+import com.arbiter.core.domain.Achievement;
 import com.arbiter.core.domain.Player;
 import com.arbiter.core.dto.IdDto;
 import com.arbiter.core.dto.player.AbsentPlayersDto;
 import com.arbiter.core.dto.player.ActivatePlayersDto;
+import com.arbiter.core.dto.player.AddAchievementDto;
 import com.arbiter.core.dto.player.AddPlayerDto;
-import com.arbiter.core.dto.player.FoundAllPlayers;
+import com.arbiter.core.dto.player.FoundPlayers;
 import com.arbiter.core.dto.player.PlayerDto;
 import com.arbiter.core.exception.PlayerAlreadyExistsException;
 import com.arbiter.core.exception.PlayerNotFoundException;
 import com.arbiter.core.exception.PlayersNotFoundException;
 import com.arbiter.core.repository.PlayerRepository;
+import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.validation.ValidationTypes;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +39,13 @@ public class PlayerService {
     this.userRightsService = userRightsService;
   }
 
-  public FoundAllPlayers findAllPlayers(boolean onlyActive) {
+  public FoundPlayers findAllPlayers(boolean onlyActive) {
     var players = playerRepository.listAll(onlyActive)
         .stream()
         .map(PlayerDto::fromPlayer)
         .collect(Collectors.toList());
     log.info("Found {} players", players.size());
-    return new FoundAllPlayers(players);
+    return new FoundPlayers(players);
   }
 
   public AbsentPlayersDto updateActiveStatusPlayers(ActivatePlayersDto dto, boolean activate) {
@@ -93,6 +96,13 @@ public class PlayerService {
 
   public Player updatePlayer(Player p) {
     return playerRepository.updatePlayer(p);
+  }
+
+  public void addAchievement(AddAchievementDto dto) {
+    validate(dto, ValidationTypes.addAchievementDtoType);
+    Player playerByName = findPlayerByName(dto.playerName());
+    playerByName.getAchievements().add(new Achievement(dto.achievementCode(), DateUtils.now()));
+    updatePlayer(playerByName);
   }
 
   private Player findPlayerByCriteria(Criteria criteria) {

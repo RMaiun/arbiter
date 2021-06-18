@@ -1,8 +1,9 @@
 package com.arbiter.http.controller;
 
 import com.arbiter.core.dto.IdDto;
+import com.arbiter.core.dto.player.AddAchievementDto;
 import com.arbiter.core.dto.player.AddPlayerDto;
-import com.arbiter.core.dto.player.FoundAllPlayers;
+import com.arbiter.core.dto.player.FoundPlayers;
 import com.arbiter.core.service.PlayerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +22,13 @@ public class PlayerController {
   }
 
   @GetMapping("/all")
-  public FoundAllPlayers findAllPlayers() {
-    return playerService.findAllPlayers(true);
+  public FoundPlayers findAllPlayers() {
+    return playerService.findAllPlayers(false);
+  }
+
+  @PostMapping("/achievement/add")
+  public void addAchievement(AddAchievementDto dto) {
+    playerService.addAchievement(dto);
   }
 
   @PostMapping("/add")
