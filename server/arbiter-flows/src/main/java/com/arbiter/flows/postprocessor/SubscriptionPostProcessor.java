@@ -28,7 +28,7 @@ public class SubscriptionPostProcessor implements PostProcessor {
 
   @Override
   public void postProcess(BotInputMessage input, int msgId) {
-    var message = String.format("%s You was participated for notifications%s", PREFIX, SUFFIX);
+    var message = String.format("%s Реєстрація пройшла успішно%s", PREFIX, SUFFIX);
     var data = mapper.convertValue(input.data(), LinkTidDto.class);
     var dto = new BotOutputMessage(data.tid(), msgId, message);
     rabbitSender.send(OutputMessage.ok(dto));

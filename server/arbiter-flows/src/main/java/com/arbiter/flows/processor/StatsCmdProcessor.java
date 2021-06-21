@@ -44,33 +44,33 @@ public class StatsCmdProcessor implements CommandProcessor {
 
   private String format(SeasonShortStats data) {
     if (data.gamesPlayed() == 0) {
-      return String.format("%sNo games found in season %s%s", PREFIX, data.season(), SUFFIX);
+      return String.format("%sНе знайдено ігор в сезоні %s%s", PREFIX, data.season(), SUFFIX);
     }
 
     String ratings = data.playersRating().isEmpty()
-        ? String.format("Nobody played more than %d games", appProps.expectedGames)
+        ? String.format("Ніхто не зіграв більше %d ігор", appProps.expectedGames)
         : IntStream.range(0, data.playersRating().size())
             .mapToObj(i -> String.format("%d. %s %s", i + 1,
                 capitalize(data.playersRating().get(i).surname()),
                 ratingToPercents(data.playersRating().get(i).score())))
             .collect(Collectors.joining(LINE_SEPARATOR));
 
-    String bestStreak = String.format("%s: %d games in row", capitalize(data.bestStreak().player()), data.bestStreak().games());
-    String worstStreak = String.format("%s: %d games in row", capitalize(data.worstStreak().player()), data.worstStreak().games());
+    String bestStreak = String.format("%s: %d ігор підряд", capitalize(data.bestStreak().player()), data.bestStreak().games());
+    String worstStreak = String.format("%s: %d ігор підряд", capitalize(data.worstStreak().player()), data.worstStreak().games());
     String separator = StringUtils.repeat("-", 30);
     return PREFIX
-        + "Season: " + data.season() + LINE_SEPARATOR
-        + "Games played: " + data.gamesPlayed() + LINE_SEPARATOR
-        + "Days till season end: " + data.daysToSeasonEnd() + LINE_SEPARATOR
+        + "Сезон: " + data.season() + LINE_SEPARATOR
+        + "Ігор зіграно: " + data.gamesPlayed() + LINE_SEPARATOR
+        + "Залишилось днів: " + data.daysToSeasonEnd() + LINE_SEPARATOR
         + separator + LINE_SEPARATOR
-        + "Current Win Rates:" + LINE_SEPARATOR
+        + "Рейтинг:" + LINE_SEPARATOR
         + ratings + LINE_SEPARATOR
         + formatUnrankedPlayers(data, separator)
         + separator + LINE_SEPARATOR
-        + "Best Streak:" + LINE_SEPARATOR
+        + "Найкраща серія:" + LINE_SEPARATOR
         + bestStreak + LINE_SEPARATOR
         + separator + LINE_SEPARATOR
-        + "Worst Streak:" + LINE_SEPARATOR
+        + "Найгірша серія:" + LINE_SEPARATOR
         + worstStreak + LINE_SEPARATOR
         + SUFFIX;
   }
@@ -83,7 +83,7 @@ public class StatsCmdProcessor implements CommandProcessor {
         .map(us -> String.format("- %s +%d", capitalize(us.player()), us.gamesToPlay()))
         .collect(Collectors.joining(LINE_SEPARATOR));
     return separator + LINE_SEPARATOR
-        + "Need to play more games:" + LINE_SEPARATOR
+        + "Чекаємо у рейтингу:" + LINE_SEPARATOR
         + unrankedData + LINE_SEPARATOR;
   }
 

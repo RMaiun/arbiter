@@ -34,7 +34,7 @@ public class SubscriptionCmdProcessor implements CommandProcessor {
   }
 
   private String format(SubscriptionResultDto dto) {
-    String action = dto.notificationsEnabled() ? "enabled" : "disabled";
-    return String.format("%s Notifications were %s%s", PREFIX, action, SUFFIX);
+    String action = dto.notificationsEnabled() ? "увімкнені" : "вимкнені";
+    return String.format("%s Сповіщення були %s%s", PREFIX, action, SUFFIX);
   }
 }

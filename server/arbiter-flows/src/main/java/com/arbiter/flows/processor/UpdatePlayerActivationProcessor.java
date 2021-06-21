@@ -31,15 +31,15 @@ public class UpdatePlayerActivationProcessor implements CommandProcessor {
   }
 
   private String format(AbsentPlayersDto absentPlayersDto, boolean activate) {
-    var status = activate ? "activated" : "deactivated";
-    var firstPart = String.format("All players were successfully %s", status);
+    var status = activate ? "активовані" : "деактивовані";
+    var firstPart = String.format("Гравці були успішно %s", status);
     if (absentPlayersDto.players().isEmpty()) {
       return String.format("%s %s. %s", PREFIX, firstPart, SUFFIX);
     } else {
       var players = absentPlayersDto.players()
           .stream()
           .collect(Collectors.joining(",", "[", "]"));
-      var secondPart = String.format("except %s", players);
+      var secondPart = String.format("крім %s", players);
       return String.format("%s %s %s. %s", PREFIX, firstPart, secondPart, SUFFIX);
     }
   }

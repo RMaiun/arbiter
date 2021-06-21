@@ -63,8 +63,8 @@ public class AddRoundPostProcessor implements PostProcessor {
   }
 
   private String formatNotification(String opponents, boolean winner) {
-    String action = winner ? "WIN" : "LOSE";
-    return format("%sYour %s against %s was stored%s",
+    String action = winner ? "Виграш" : "Програш";
+    return format("%s%s проти %s було збережено%s",
         PREFIX, action, capitalize(opponents), SUFFIX);
   }
 }

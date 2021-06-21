@@ -34,7 +34,7 @@ public class LinkTidCmdProcessor implements CommandProcessor {
   }
 
   private String format(SubscriptionResultDto data) {
-    return String.format("%s Notifications were linked for %s%s", PREFIX, data.subscribedSurname(), SUFFIX);
+    return String.format("%s Сповіщення були залінковані для %s%s", PREFIX, data.subscribedSurname(), SUFFIX);
   }
 
 }

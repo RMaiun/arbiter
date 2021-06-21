@@ -41,7 +41,7 @@ public class LastCmdProcessor implements CommandProcessor {
 
   private String format(FoundLastRounds data) {
     if (isEmpty(data.rounds())) {
-      return String.format("%s There are no games in season %s%s", PREFIX, data.season(), SUFFIX);
+      return String.format("%s Не знайдено ігор в сезоні %s%s", PREFIX, data.season(), SUFFIX);
     } else {
       return data.rounds().stream()
           .map(this::formatRound)
@@ -54,11 +54,11 @@ public class LastCmdProcessor implements CommandProcessor {
     String winners = String.format("%s/%s", capitalize(round.winner1()), capitalize(round.winner2()));
     String losers = String.format("%s/%s", capitalize(round.loser1()), capitalize(round.loser2()));
     StringBuilder sb = new StringBuilder();
-    sb.append("date: ").append(date).append(LINE_SEPARATOR);
-    sb.append("winners: ").append(winners).append(LINE_SEPARATOR);
-    sb.append("losers: ").append(losers).append(LINE_SEPARATOR);
+    sb.append("дата: ").append(date).append(LINE_SEPARATOR);
+    sb.append("красави: ").append(winners).append(LINE_SEPARATOR);
+    sb.append("лузери: ").append(losers).append(LINE_SEPARATOR);
     if (round.shutout()) {
-      sb.append("shutout: ✓").append(LINE_SEPARATOR);
+      sb.append("суха: ✓").append(LINE_SEPARATOR);
     }
     return sb.toString();
   }

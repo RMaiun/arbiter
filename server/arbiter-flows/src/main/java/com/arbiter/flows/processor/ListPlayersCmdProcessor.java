@@ -37,7 +37,7 @@ public class ListPlayersCmdProcessor implements CommandProcessor {
 
   private String format(FoundPlayers data, Player moderator) {
     if (data.players().isEmpty()) {
-      return String.format("%sNo active players were found%s", PREFIX, SUFFIX);
+      return String.format("%sНе знайдено активних гравців%s", PREFIX, SUFFIX);
     }
     String players = IntStream.range(0, data.players().size())
         .mapToObj(i -> String.format("%d|%s", i + 1, formatPlayerLine(data.players().get(i), moderator)))
