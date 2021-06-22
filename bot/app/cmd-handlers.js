@@ -6,18 +6,18 @@ const startData = `
   --------------------------------------
   /self - Дані про себе
   --------------------------------------
-  'Гравці' - Всі існуючі юзери з id
+  /players - Всі існуючі юзери з id
   --------------------------------------
-  'Останні матчі' [s][n] - показати n останніх матчів
+  /last [s][n] - показати n останніх матчів
   (s - опціонально, по дефолту current season)
   (n - опціонально, по дефолту 6)
   --------------------------------------
-  'Статистика' [x] - рейтинг гравців у сезоні
+  /stats [x] - рейтинг гравців у сезоні
   (x - формат сезона, опціонально)
   якщо x відсутній, то now()
   приклад: S1|2019, S4|2020
   --------------------------------------
-  'Репорт' [s] - згенерувати xlsx репорт для сезону
+  '/xlsx' [s] - згенерувати xlsx репорт для сезону
   (s - опціонально, по дефолту - той, що на даний момент відкритий)
   --------------------------------------
   /subscribe - увімкнути сповіщення
@@ -44,51 +44,94 @@ class CmdHandlers{
     `);
   }
 
-  statsCmdHandler(ctx){
-    console.log(ctx);
-
+  async listPlayersCmdHandler(ctx){
+    await this._rc.publish(this._dtoIn("listPlayers", ctx));
   }
 
-
-  async xlsxReportCmdHandler(ctx){
-    const x = await this.loadFile()
-    ctx.replyWithDocument({source: x, filename: "test.xlsx"})
+  async statsCmdHandler(ctx, isCmd = true){
+    let season;
+    if (isCmd){
+      const cmdWithArgs = ctx.message.text.trim().split(" ");
+      cmdWithArgs.shift();
+      season = cmdWithArgs.length > 0 ? cmdWithArgs[0] : this._currentQuarter();
+    }else{
+      season = this._currentQuarter();
+    }
+    await this._rc.publish(this._dtoIn("shortStats", ctx, {season}));
   }
 
-  async newsCmdHandler(ctx){
-    const cmdWithArgs = ctx.message.text.trim().split(" ");
-    cmdWithArgs.shift();
-    const msg = cmdWithArgs.join(" ")
-    const dtoIn = {
-      cmd: "/addNews",
+  async lastGamesCmdHandler(ctx, isCmd = true){
+    let data = {
+      season: this._currentQuarter(),
+      qty: 6
+    };
+    if (isCmd){
+      const cmdWithArgs = ctx.message.text.trim().split(" ");
+      cmdWithArgs.shift();
+      if (cmdWithArgs.length === 1){
+        data.season = cmdWithArgs[0];
+      }else if (cmdWithArgs.length ===2){
+        data.season = cmdWithArgs[0];
+        data.qty = cmdWithArgs[1];
+      }
+    }
+    await this._rc.publish(this._dtoIn("findLastRounds", ctx, data));
+  }
+
+  async xlsxReportCmdHandler(ctx, isCmd = true){
+    let season = this._currentQuarter();
+    if (isCmd){
+      const cmdWithArgs = ctx.message.text.trim().split(" ");
+      cmdWithArgs.shift();
+      if (cmdWithArgs.length === 1){
+        season = cmdWithArgs[0];
+      }
+    }
+    const doc = await this.loadFile(`http://localhost:9091/reports/xlsx/${season}`, 'GET')
+    ctx.replyWithDocument({source: doc, filename: `${season.replace("|","_")}.xlsx`})
+  }
+
+  // async statsCmdHandler(ctx){
+  //   const x = await this.loadFile()
+  //   ctx.replyWithDocument({source: x, filename: "test.xlsx"})
+  // }
+
+  async loadFile(uri, method){
+    try {
+      const response = await axios({
+        url: uri,
+        method: method,
+        responseType: 'stream'
+      });
+      return response.data;
+    } catch (error) {
+      throw  error;
+    }
+  }
+
+  _currentQuarter(){
+    const now = new Date();
+    const month = now.getMonth()+1;
+    let quarter;
+    if ([1,2,3].includes(month)){
+      quarter = 1;
+    }else if ([4,5,6].includes(month)){
+      quarter = 2;
+    }else if([7,8,9].includes(month)){
+      quarter = 3;
+    }else {
+      quarter = 4;
+    }
+    return `S${quarter}|${now.getFullYear()}`
+  }
+
+  _dtoIn(eventCode, ctx, data = {}){
+    return {
+      cmd: eventCode,
       chatId: ctx.chat.id,
       tid: ctx.message.from.id,
       user: ctx.message.from.first_name,
-      data:{
-        message: msg,
-        moderator: ctx.update.message.from.id
-      }
-    }
-    await this._rc.publish(dtoIn);
-  }
-
-  async statsCmdHandler(ctx){
-    const x = await this.loadFile()
-    ctx.replyWithDocument({source: x, filename: "test.xlsx"})
-  }
-
-  async loadFile(){
-    try {
-      const response = await axios({
-        url: 'http://localhost:8080/reports/xlsx/S2|2021',
-        method: 'GET',
-        responseType: 'stream'
-      });
-      console.log(response);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      throw  error;
+      data
     }
   }
 

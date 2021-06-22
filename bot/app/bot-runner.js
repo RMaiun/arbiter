@@ -5,20 +5,8 @@ const { RabbitClient } = require('./rabbit-client')
 
 class BotRunner{
   constructor(token) {
-    this._token= token;
     this._bot = new Telegraf(token);
     this._rc = new RabbitClient();
-  }
-
-  async _menuska(ctx, bot){
-    await bot.telegram.sendMessage(ctx.chat.id, `something`, {
-      reply_markup: JSON.stringify({
-        keyboard: [
-          [{ text: "x1", }, {text: "x2"}],
-          [{text:"x3"}]
-        ]
-      })
-    })
   }
 
   initBot(){
@@ -28,11 +16,15 @@ class BotRunner{
     this._bot.on('sticker', (ctx) => ctx.reply('👍'))
 
     this._bot.command("/self", CmdHandlers.selfCmdHandler)
+    this._bot.command("/stats", (ctx) => CmdHandlers.statsCmdHandler(ctx))
+    this._bot.command("/players", (ctx) => CmdHandlers.listPlayersCmdHandler(ctx))
+    this._bot.command("/last", (ctx) => CmdHandlers.lastGamesCmdHandler(ctx))
     this._bot.command("/xlsxReport", (ctx) => CmdHandlers.xlsxReportCmdHandler(ctx))
-    this._bot.command("/news", (ctx) => CmdHandlers.newsCmdHandler(ctx))
 
-    this._bot.hears('hi', ctx => this._menuska(ctx, this._bot))
-    this._bot.hears(':bar_chart: Статистика', (ctx) => ctx.reply('Hey there'))
+    this._bot.hears('Cтатистика \uD83D\uDCC8', (ctx) => CmdHandlers.statsCmdHandler(ctx, false))
+    this._bot.hears('Всі гравці \uD83D\uDDFF', (ctx) => CmdHandlers.listPlayersCmdHandler(ctx))
+    this._bot.hears('Останні партії \uD83D\uDCCB', (ctx) => CmdHandlers.lastGamesCmdHandler(ctx, false))
+    this._bot.hears('Завантажити .xlsx \uD83D\uDCBE', (ctx) => CmdHandlers.xlsxReportCmdHandler(ctx, false))
     this._rc.initConsumer(this._bot)
     return this._bot;
   }
