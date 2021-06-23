@@ -11,6 +11,7 @@ jobs:
 
     environment:
       IMAGE_NAME: mairo/arbiter
+      BOT_IMAGE_NAME: mairo/arbot
       JVM_OPTS: -Xmx3200m
       TERM: dumb
 
@@ -44,9 +45,32 @@ jobs:
           root: .
           paths:
             - ./image.tar
+
+  bot-build:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+
+    working_directory: ~/repo
+
+    environment:
+      BOT_IMAGE_NAME: mairo/arbot
+      TERM: dumb
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: cd bot && docker build -t $BOT_IMAGE_NAME:latest .
+      - run: cd bot && docker save -o ../bot_image.tar $BOT_IMAGE_NAME
+      - run: pwd
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./bot_image.tar
+
   publish-latest:
     environment:
       IMAGE_NAME: mairo/arbiter
+      BOT_IMAGE_NAME: mairo/arbot
     docker:
       - image: circleci/buildpack-deps:stretch
     steps:
@@ -57,6 +81,19 @@ jobs:
       - run: cat /dev/null | docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
       - run: cat /dev/null | docker push $IMAGE_NAME:latest
 
+  bot-publish-latest:
+    environment:
+      BOT_IMAGE_NAME: mairo/arbot
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run: docker load -i /tmp/workspace/bot_image.tar
+      - run: cat /dev/null | docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
+      - run: cat /dev/null | docker push $BOT_IMAGE_NAME:latest
+
 workflows:
   version: 2
   build-master:
@@ -66,6 +103,16 @@ workflows:
           context: myctx
           requires:
             - build
+          filters:
+            branches:
+              only: master
+      - bot-build:
+          requires:
+            - publish-latest
+      - bot-publish-latest:
+          context: myctx
+          requires:
+            - bot-build
           filters:
             branches:
               only: master

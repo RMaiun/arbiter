@@ -22,3 +22,12 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+  catabot:
+    image: mairo/bot:latest
+    container_name: catabot
+    ports:
+      - "443:443"
+    environment:
+      TOKEN: ""
+      ARBITER_URI: "http://host.docker.internal:9091"
+      RABBITMQ_URI: "amqp://rabbitmq:rabbitmq@host.docker.internal:5672/ukl"
