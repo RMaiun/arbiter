@@ -16,5 +16,9 @@
     "dotenv": "^8.2.0",
     "minimist": "^1.2.5",
     "telegraf": "^4.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "standard": "^16.0.3"
   }
 }

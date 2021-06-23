@@ -11,6 +11,7 @@ jobs:
 
     environment:
       IMAGE_NAME: mairo/arbiter
+      BOT_IMAGE_NAME: mairo/arbot
       JVM_OPTS: -Xmx3200m
       TERM: dumb
 
@@ -40,13 +41,17 @@ jobs:
       - setup_remote_docker
       - run: docker build -t $IMAGE_NAME:latest .
       - run: docker save -o image.tar $IMAGE_NAME
+      - run: cd bot && docker build -t $BOT_IMAGE_NAME:latest .
+      - run: cd bot && docker save -o bot_image.tar $BOT_IMAGE_NAME
       - persist_to_workspace:
           root: .
           paths:
             - ./image.tar
+            - ./bot_image.tar
   publish-latest:
     environment:
       IMAGE_NAME: mairo/arbiter
+      BOT_IMAGE_NAME: mairo/arbot
     docker:
       - image: circleci/buildpack-deps:stretch
     steps:
@@ -56,6 +61,8 @@ jobs:
       - run: docker load -i /tmp/workspace/image.tar
       - run: cat /dev/null | docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
       - run: cat /dev/null | docker push $IMAGE_NAME:latest
+      - run: docker load -i /tmp/workspace/bot_image.tar
+      - run: cat /dev/null | docker push BOT_IMAGE_NAME:latest
 
 workflows:
   version: 2
