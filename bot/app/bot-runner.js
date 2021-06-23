@@ -20,6 +20,13 @@ class BotRunner{
     this._bot.command("/players", (ctx) => CmdHandlers.listPlayersCmdHandler(ctx))
     this._bot.command("/last", (ctx) => CmdHandlers.lastGamesCmdHandler(ctx))
     this._bot.command("/xlsxReport", (ctx) => CmdHandlers.xlsxReportCmdHandler(ctx))
+    this._bot.command("/subscribe", (ctx) => CmdHandlers.subscribeCmdHandler(ctx, true))
+    this._bot.command("/unsubscribe", (ctx) => CmdHandlers.subscribeCmdHandler(ctx, false))
+    this._bot.command("/linkTid", (ctx) => CmdHandlers.linkTidCmdHandler(ctx, false))
+    this._bot.command("/activate", (ctx) => CmdHandlers.activateCmdHandler(ctx, true))
+    this._bot.command("/deactivate", (ctx) => CmdHandlers.activateCmdHandler(ctx, false))
+    this._bot.command("/add", (ctx) => CmdHandlers.addRoundCmdHandler(ctx))
+    this._bot.command("/register", (ctx) => CmdHandlers.addPlayerCmdHandler(ctx))
 
     this._bot.hears('Cтатистика \uD83D\uDCC8', (ctx) => CmdHandlers.statsCmdHandler(ctx, false))
     this._bot.hears('Всі гравці \uD83D\uDDFF', (ctx) => CmdHandlers.listPlayersCmdHandler(ctx))

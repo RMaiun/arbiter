@@ -17,8 +17,11 @@ const startData = `
   якщо x відсутній, то now()
   приклад: S1|2019, S4|2020
   --------------------------------------
-  '/xlsx' [s] - згенерувати xlsx репорт для сезону
+  /xlsx [s] - згенерувати xlsx репорт для сезону
   (s - опціонально, по дефолту - той, що на даний момент відкритий)
+  --------------------------------------
+  /linkTid [chatId surname] - увімкнути сповіщення юзеру
+  (тільки для адмінів)
   --------------------------------------
   /subscribe - увімкнути сповіщення
   --------------------------------------
@@ -51,9 +54,8 @@ class CmdHandlers{
   async statsCmdHandler(ctx, isCmd = true){
     let season;
     if (isCmd){
-      const cmdWithArgs = ctx.message.text.trim().split(" ");
-      cmdWithArgs.shift();
-      season = cmdWithArgs.length > 0 ? cmdWithArgs[0] : this._currentQuarter();
+      const args = this._parseArgs(ctx.message.text);
+      season = args.length > 0 ? args[0] : this._currentQuarter();
     }else{
       season = this._currentQuarter();
     }
@@ -66,13 +68,12 @@ class CmdHandlers{
       qty: 6
     };
     if (isCmd){
-      const cmdWithArgs = ctx.message.text.trim().split(" ");
-      cmdWithArgs.shift();
-      if (cmdWithArgs.length === 1){
-        data.season = cmdWithArgs[0];
-      }else if (cmdWithArgs.length ===2){
-        data.season = cmdWithArgs[0];
-        data.qty = cmdWithArgs[1];
+      const args = this._parseArgs(ctx.message.text);
+      if (args.length === 1){
+        data.season = args[0];
+      }else if (args.length ===2){
+        data.season = args[0];
+        data.qty = args[1];
       }
     }
     await this._rc.publish(this._dtoIn("findLastRounds", ctx, data));
@@ -81,22 +82,78 @@ class CmdHandlers{
   async xlsxReportCmdHandler(ctx, isCmd = true){
     let season = this._currentQuarter();
     if (isCmd){
-      const cmdWithArgs = ctx.message.text.trim().split(" ");
-      cmdWithArgs.shift();
-      if (cmdWithArgs.length === 1){
-        season = cmdWithArgs[0];
+      const args = this._parseArgs(ctx.message.text);
+      if (args.length === 1){
+        season = args[0];
       }
     }
-    const doc = await this.loadFile(`http://localhost:9091/reports/xlsx/${season}`, 'GET')
-    ctx.replyWithDocument({source: doc, filename: `${season.replace("|","_")}.xlsx`})
+    const doc = await this._loadFile(`http://localhost:9091/reports/xlsx/${season}`, 'GET')
+    await ctx.replyWithDocument({source: doc, filename: `${season.replace("|","_")}.xlsx`})
+  }
+  async subscribeCmdHandler(ctx, subscribe){
+    const cmd = subscribe ? "subscribe" : "unsubscribe";
+    const data = {
+      enableSubscriptions: subscribe,
+      tid: ctx.message.from.id
+    }
+    await this._rc.publish(this._dtoIn(cmd, ctx, data));
   }
 
-  // async statsCmdHandler(ctx){
-  //   const x = await this.loadFile()
-  //   ctx.replyWithDocument({source: x, filename: "test.xlsx"})
-  // }
+  async linkTidCmdHandler(ctx){
+    const args = this._parseArgs(ctx.message.text);
+    const[chatId, name] = args
+    const data = {
+      tid: chatId,
+      nameToLink: name,
+      moderator: ctx.message.from.id
+    }
+    await this._rc.publish(this._dtoIn("linkTid", ctx, data));
+  }
 
-  async loadFile(uri, method){
+  async activateCmdHandler(ctx, isActivated){
+    const cmd = isActivated ? "activate" : "deactivate";
+    const args = this._parseArgs(ctx.message.text);
+    const data = {
+      players: args,
+      moderator: ctx.message.from.id
+    }
+    await this._rc.publish(this._dtoIn(cmd, ctx, data));
+  }
+
+  async addRoundCmdHandler(ctx){
+    const args = this._parseArgs(ctx.message.text);
+    const data = {
+      shutout: args.includes('суха'),
+      moderator: ctx.message.from.id,
+    }
+    const pairs = args.filter(x => x.indexOf("/") > 0);
+    if (pairs.length === 2){
+      const [w1,w2] = pairs[0].split("/");
+      const [l1,l2] = pairs[1].split("/");
+      data.w1 = w1;
+      data.w2 = w2;
+      data.l1 = l1;
+      data.l2 = l2;
+    }
+    await this._rc.publish(this._dtoIn('addRound', ctx, data));
+  }
+
+  async addPlayerCmdHandler(ctx){
+    const args = this._parseArgs(ctx.message.text);
+    const data = {
+      admin: args.includes('адмін'),
+      moderator: ctx.message.from.id,
+    }
+    if (args.length >=2){
+      data.surname = args[0];
+      data.tid = args[1];
+    }else if (args.length < 2){
+      data.surname = args[0];
+    }
+    await this._rc.publish(this._dtoIn('addPlayer', ctx, data));
+  }
+
+  async _loadFile(uri, method){
     try {
       const response = await axios({
         url: uri,
@@ -107,6 +164,11 @@ class CmdHandlers{
     } catch (error) {
       throw  error;
     }
+  }
+  _parseArgs(text){
+    const args = text.trim().split(" ");
+    args.shift();
+    return args;
   }
 
   _currentQuarter(){

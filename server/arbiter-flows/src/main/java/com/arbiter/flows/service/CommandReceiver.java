@@ -3,6 +3,7 @@ package com.arbiter.flows.service;
 
 import static com.arbiter.flows.utils.IdGenerator.msgId;
 
+import com.arbiter.core.config.AppProperties;
 import com.arbiter.core.service.UserRightsService;
 import com.arbiter.flows.dto.OutputMessage;
 import com.arbiter.flows.exception.InvalidCommandException;
@@ -24,15 +25,17 @@ public class CommandReceiver implements MessageListener {
   private final List<CommandProcessor> processors;
   private final List<PostProcessor> postProcessors;
   private final UserRightsService userRightsService;
+  private final AppProperties appProperties;
 
   public CommandReceiver(MetadataParser metadataParser, RabbitSender rabbitSender,
       List<CommandProcessor> processors, List<PostProcessor> postProcessors,
-      UserRightsService userRightsService) {
+      UserRightsService userRightsService, AppProperties appProperties) {
     this.metadataParser = metadataParser;
     this.rabbitSender = rabbitSender;
     this.processors = processors;
     this.postProcessors = postProcessors;
     this.userRightsService = userRightsService;
+    this.appProperties = appProperties;
   }
 
   @Override
@@ -47,10 +50,12 @@ public class CommandReceiver implements MessageListener {
           .orElseThrow(() -> new InvalidCommandException(input.cmd()));
       var processResult = processor.process(input, msgId());
       rabbitSender.send(processResult);
-      postProcessors.stream()
-          .filter(p -> p.commands().contains(input.cmd()))
-          .findAny()
-          .ifPresent(pp -> pp.postProcess(input, msgId()));
+      if (appProperties.notificationsEnabled) {
+        postProcessors.stream()
+            .filter(p -> p.commands().contains(input.cmd()))
+            .findAny()
+            .ifPresent(pp -> pp.postProcess(input, msgId()));
+      }
     } catch (Throwable err) {
       log.error(err.getMessage());
       var error = OutputMessage.error(input.chatId(), msgId(), format(err));

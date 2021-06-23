@@ -35,7 +35,7 @@ public class AddRoundCmdProcessor implements CommandProcessor {
 
   private String format(IdDto data) {
     var id = data.id().substring(data.id().length() - 4);
-    return String.format("%s Додано новий гру з id %s %s",
+    return String.format("%s Додано нову гру з id %s %s",
         PREFIX, id, SUFFIX);
   }
 }

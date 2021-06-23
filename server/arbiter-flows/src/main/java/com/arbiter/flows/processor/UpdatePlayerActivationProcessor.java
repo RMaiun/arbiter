@@ -3,6 +3,7 @@ package com.arbiter.flows.processor;
 import com.arbiter.core.dto.player.AbsentPlayersDto;
 import com.arbiter.core.dto.player.ActivatePlayersDto;
 import com.arbiter.core.service.PlayerService;
+import com.arbiter.core.service.UserRightsService;
 import com.arbiter.flows.dto.BotInputMessage;
 import com.arbiter.flows.dto.OutputMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,16 +16,19 @@ public class UpdatePlayerActivationProcessor implements CommandProcessor {
 
   private final ObjectMapper objectMapper;
   private final PlayerService playerService;
+  private final UserRightsService userRightsService;
 
-  public UpdatePlayerActivationProcessor(ObjectMapper objectMapper, PlayerService playerService) {
+  public UpdatePlayerActivationProcessor(ObjectMapper objectMapper, PlayerService playerService, UserRightsService userRightsService) {
     this.objectMapper = objectMapper;
     this.playerService = playerService;
+    this.userRightsService = userRightsService;
   }
 
   @Override
   public OutputMessage process(BotInputMessage input, int msgId) {
     var data = objectMapper.convertValue(input.data(), ActivatePlayersDto.class);
     var activate = ACTIVATE_CMD.equals(input.cmd());
+    userRightsService.checkUserIsAdmin(data.moderator());
     var dtoOut = playerService.updateActiveStatusPlayers(data, activate);
     var result = format(dtoOut, activate);
     return OutputMessage.ok(input.chatId(), msgId, result);

@@ -45,7 +45,7 @@ public interface ValidationTypes {
       schema()
           .withRule(rule(dto.tid(), "tid", onlyNumbers()))
           .withRule(requiredRule(dto.surname(), "surname", length(2, 20), onlyLetters()))
-          .withRule(rule(dto.moderator(), "moderator", notEmpty()));
+          .withRule(requiredRule(dto.moderator(), "moderator", notEmpty()));
 
   ValidationType<GenerateStatsDocumentDto> generateStatsDocumentValidationType = dto ->
       schema()
@@ -53,17 +53,17 @@ public interface ValidationTypes {
 
   ValidationType<LinkTidDto> linkTidValidationType = dto ->
       schema()
-          .withRule(rule(dto.moderator(), "moderator", notEmpty(), onlyNumbers()))
-          .withRule(rule(dto.nameToLink(), "nameToLink", length(2, 20), onlyLetters()))
-          .withRule(rule(dto.tid(), "tid", notEmpty(), onlyNumbers()));
+          .withRule(requiredRule(dto.moderator(), "moderator", notEmpty(), onlyNumbers()))
+          .withRule(requiredRule(dto.nameToLink(), "nameToLink", length(2, 20), onlyLetters()))
+          .withRule(requiredRule(dto.tid(), "tid", notEmpty(), onlyNumbers()));
 
   ValidationType<SubscriptionActionDto> subscriptionActionValidationType = dto ->
       schema()
-          .withRule(rule(dto.tid(), "moderator", notEmpty(), onlyNumbers()));
+          .withRule(requiredRule(dto.tid(), "moderator", notEmpty(), onlyNumbers()));
 
   ValidationType<AddAchievementDto> addAchievementDtoType = dto ->
       schema()
-          .withRule(rule(dto.playerName(), "playerName", notEmpty(), onlyLetters()))
-          .withRule(rule(dto.achievementCode(), "achievementCode", notEmpty()));
+          .withRule(requiredRule(dto.playerName(), "playerName", notEmpty(), onlyLetters()))
+          .withRule(requiredRule(dto.achievementCode(), "achievementCode", notEmpty()));
 
 }

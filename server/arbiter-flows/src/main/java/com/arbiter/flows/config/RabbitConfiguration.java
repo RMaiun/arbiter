@@ -1,5 +1,6 @@
 package com.arbiter.flows.config;
 
+import com.arbiter.core.config.AppProperties;
 import com.arbiter.core.service.UserRightsService;
 import com.arbiter.flows.postprocessor.PostProcessor;
 import com.arbiter.flows.processor.CommandProcessor;
@@ -54,11 +55,11 @@ public class RabbitConfiguration {
 
   @Bean
   public SimpleMessageListenerContainer messageListenerContainer(MetadataParser metadataParser, RabbitSender rabbitSender,
-      List<CommandProcessor> processors, List<PostProcessor> postProcessors, UserRightsService userRightsService) {
+      List<CommandProcessor> processors, List<PostProcessor> postProcessors, UserRightsService userRightsService, AppProperties appProperties) {
     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
     container.setConnectionFactory(rabbitConnectionFactory());
     container.setQueueNames(rabbitProperties.getInputQueue());
-    container.setMessageListener(new CommandReceiver(metadataParser, rabbitSender, processors, postProcessors, userRightsService));
+    container.setMessageListener(new CommandReceiver(metadataParser, rabbitSender, processors, postProcessors, userRightsService, appProperties));
     container.setConcurrentConsumers(8);
     return container;
   }
