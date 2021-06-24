@@ -1,4 +1,4 @@
-package com.arbiter.http.controller;
+package com.arbiter.core.controller;
 
 import com.arbiter.core.dto.IdDto;
 import com.arbiter.core.dto.player.AddAchievementDto;
@@ -34,5 +34,10 @@ public class PlayerController {
   @PostMapping("/add")
   public IdDto addPlayer(@RequestBody AddPlayerDto addPlayerDto) {
     return playerService.addPlayer(addPlayerDto);
+  }
+
+  @PostMapping("/achievement/add")
+  public void addPlayer(@RequestBody AddAchievementDto dto) {
+    playerService.addAchievement(dto);
   }
 }

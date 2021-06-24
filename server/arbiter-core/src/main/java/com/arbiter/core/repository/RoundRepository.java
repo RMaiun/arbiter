@@ -26,6 +26,20 @@ public class RoundRepository {
     return template.find(new Query().addCriteria(where("season").is(season)), Round.class);
   }
 
+  public List<Round> listAllRoundsByPlayer(String player, boolean shutout) {
+    Criteria criteria = new Criteria();
+    criteria.orOperator(
+        Criteria.where("winner1").is(player),
+        Criteria.where("winner2").is(player),
+        Criteria.where("loser1").is(player),
+        Criteria.where("loser2").is(player)
+    );
+    if (shutout){
+      criteria.and("shutout").is(true);
+    }
+    return template.find(new Query().addCriteria(criteria), Round.class);
+  }
+
   public Round getById(String id) {
     return template.findOne(new Query().addCriteria(where("_id").is(id)), Round.class);
   }

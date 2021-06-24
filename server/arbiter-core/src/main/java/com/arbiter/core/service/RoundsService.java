@@ -1,6 +1,7 @@
 package com.arbiter.core.service;
 
 
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
 import com.arbiter.core.domain.Round;
@@ -10,6 +11,8 @@ import com.arbiter.core.dto.round.FindLastRoundsDto;
 import com.arbiter.core.dto.round.FoundLastRounds;
 import com.arbiter.core.dto.round.FullRound;
 import com.arbiter.core.dto.round.GetRoundDto;
+import com.arbiter.core.dto.round.ListRoundsForPlayerDtoIn;
+import com.arbiter.core.dto.round.ListRoundsForPlayerDtoOut;
 import com.arbiter.core.exception.RoundNotFoundException;
 import com.arbiter.core.exception.SamePlayersInRoundException;
 import com.arbiter.core.repository.RoundRepository;
@@ -17,6 +20,7 @@ import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.utils.SeasonUtils;
 import com.arbiter.core.validation.ValidationTypes;
 import com.arbiter.core.validation.Validator;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +56,28 @@ public class RoundsService {
     var season = seasonService.findSeason(seasonName);
     var rounds = roundRepository.listRoundsBySeason(seasonName);
     return transformRounds(rounds, season.getName());
+  }
+
+  public ListRoundsForPlayerDtoOut roundsForPlayer(ListRoundsForPlayerDtoIn dtoIn) {
+    Validator.validate(dtoIn, ValidationTypes.listRoundsForPlayerDtoType);
+    List<Round> rounds;
+    if (nonNull(dtoIn.season())) {
+      rounds = roundRepository.listRoundsBySeason(dtoIn.season()).stream()
+          .filter(r -> List.of(r.getWinner1(), r.getWinner2(), r.getLoser1(), r.getLoser2()).contains(dtoIn.player()))
+          .collect(toList());
+    } else {
+      rounds = roundRepository.listAllRoundsByPlayer(dtoIn.player(), dtoIn.onlyShutout());
+    }
+    List<Round> filteredRounds = rounds.stream()
+        .filter(r -> !dtoIn.onlyShutout() || r.isShutout())
+        .collect(toList());
+
+    int size = filteredRounds.size();
+    List<FullRound> result = dtoIn.includeRounds()
+        ? filteredRounds.stream().map(FullRound::fromDomain).collect(toList())
+        : Collections.emptyList();
+
+    return new ListRoundsForPlayerDtoOut(size, result);
   }
 
   public IdDto saveRound(AddRoundDto dto) {

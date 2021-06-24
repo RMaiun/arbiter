@@ -1,4 +1,4 @@
-package com.arbiter.http.controller;
+package com.arbiter.core.controller;
 
 import com.arbiter.core.dto.IdDto;
 import com.arbiter.core.dto.round.AddRoundDto;
@@ -6,6 +6,8 @@ import com.arbiter.core.dto.round.FindLastRoundsDto;
 import com.arbiter.core.dto.round.FoundLastRounds;
 import com.arbiter.core.dto.round.FullRound;
 import com.arbiter.core.dto.round.GetRoundDto;
+import com.arbiter.core.dto.round.ListRoundsForPlayerDtoIn;
+import com.arbiter.core.dto.round.ListRoundsForPlayerDtoOut;
 import com.arbiter.core.service.RoundsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,5 +40,10 @@ public class RoundController {
   @GetMapping("/get")
   public FullRound getRound(@RequestParam("roundId") String roundId) {
     return roundsService.getRound(new GetRoundDto(roundId));
+  }
+
+  @PostMapping("/listForPlayer")
+  public ListRoundsForPlayerDtoOut listRoundsForPlayer(@RequestBody ListRoundsForPlayerDtoIn dtoIn){
+    return roundsService.roundsForPlayer(dtoIn);
   }
 }

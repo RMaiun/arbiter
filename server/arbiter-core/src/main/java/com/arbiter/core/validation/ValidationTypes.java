@@ -15,6 +15,7 @@ import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.round.AddRoundDto;
 import com.arbiter.core.dto.round.FindLastRoundsDto;
 import com.arbiter.core.dto.round.GetRoundDto;
+import com.arbiter.core.dto.round.ListRoundsForPlayerDtoIn;
 import com.arbiter.core.dto.stats.GenerateStatsDocumentDto;
 import com.arbiter.core.dto.subscription.LinkTidDto;
 import com.arbiter.core.dto.subscription.SubscriptionActionDto;
@@ -66,4 +67,8 @@ public interface ValidationTypes {
           .withRule(requiredRule(dto.playerName(), "playerName", notEmpty(), onlyLetters()))
           .withRule(requiredRule(dto.achievementCode(), "achievementCode", notEmpty()));
 
+  ValidationType<ListRoundsForPlayerDtoIn> listRoundsForPlayerDtoType = dto ->
+      schema()
+          .withRule(requiredRule(dto.player(), "player", notEmpty(), onlyLetters()))
+          .withRule(rule(dto.season(), "season", notEmpty(), isSeason()));
 }

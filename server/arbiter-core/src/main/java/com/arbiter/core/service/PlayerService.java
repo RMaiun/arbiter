@@ -19,6 +19,7 @@ import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.validation.ValidationTypes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -101,8 +102,13 @@ public class PlayerService {
   public void addAchievement(AddAchievementDto dto) {
     validate(dto, ValidationTypes.addAchievementDtoType);
     Player playerByName = findPlayerByName(dto.playerName());
-    playerByName.getAchievements().add(new Achievement(dto.achievementCode(), DateUtils.now()));
-    updatePlayer(playerByName);
+    Optional<Achievement> achievement = playerByName.getAchievements().stream()
+        .filter(a -> a.getCode().equals(dto.achievementCode()))
+        .findAny();
+    if (achievement.isEmpty()){
+      playerByName.getAchievements().add(new Achievement(dto.achievementCode(), DateUtils.now()));
+      updatePlayer(playerByName);
+    }
   }
 
   private Player findPlayerByCriteria(Criteria criteria) {

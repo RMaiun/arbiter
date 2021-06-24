@@ -1,4 +1,4 @@
-package com.arbiter.http.controller;
+package com.arbiter.core.controller;
 
 
 import com.arbiter.core.dto.dump.ImportDumpDto;
