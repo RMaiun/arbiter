@@ -1,7 +1,8 @@
 package com.arbiter.core.controller;
 
 import com.arbiter.core.dto.IdDto;
-import com.arbiter.core.dto.player.AddAchievementDto;
+import com.arbiter.core.dto.player.AddAchievementDtoIn;
+import com.arbiter.core.dto.player.AddAchievementDtoOut;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.player.FoundPlayers;
 import com.arbiter.core.service.PlayerService;
@@ -27,7 +28,7 @@ public class PlayerController {
   }
 
   @PostMapping("/achievement/add")
-  public void addAchievement(AddAchievementDto dto) {
+  public void addAchievement(AddAchievementDtoIn dto) {
     playerService.addAchievement(dto);
   }
 
@@ -37,7 +38,7 @@ public class PlayerController {
   }
 
   @PostMapping("/achievement/add")
-  public void addPlayer(@RequestBody AddAchievementDto dto) {
-    playerService.addAchievement(dto);
+  public AddAchievementDtoOut addPlayer(@RequestBody AddAchievementDtoIn dto) {
+    return playerService.addAchievement(dto);
   }
 }

@@ -10,7 +10,7 @@ import static com.arbiter.core.validation.functions.StringValidationFunctions.no
 import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyLetters;
 import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyNumbers;
 
-import com.arbiter.core.dto.player.AddAchievementDto;
+import com.arbiter.core.dto.player.AddAchievementDtoIn;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.round.AddRoundDto;
 import com.arbiter.core.dto.round.FindLastRoundsDto;
@@ -62,7 +62,7 @@ public interface ValidationTypes {
       schema()
           .withRule(requiredRule(dto.tid(), "moderator", notEmpty(), onlyNumbers()));
 
-  ValidationType<AddAchievementDto> addAchievementDtoType = dto ->
+  ValidationType<AddAchievementDtoIn> addAchievementDtoType = dto ->
       schema()
           .withRule(requiredRule(dto.playerName(), "playerName", notEmpty(), onlyLetters()))
           .withRule(requiredRule(dto.achievementCode(), "achievementCode", notEmpty()));

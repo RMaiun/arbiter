@@ -6,8 +6,10 @@ import com.arbiter.core.domain.Achievement;
 import com.arbiter.core.domain.Player;
 import com.arbiter.core.dto.IdDto;
 import com.arbiter.core.dto.player.AbsentPlayersDto;
+import com.arbiter.core.dto.player.ActionAck;
 import com.arbiter.core.dto.player.ActivatePlayersDto;
-import com.arbiter.core.dto.player.AddAchievementDto;
+import com.arbiter.core.dto.player.AddAchievementDtoIn;
+import com.arbiter.core.dto.player.AddAchievementDtoOut;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.player.FoundPlayers;
 import com.arbiter.core.dto.player.PlayerDto;
@@ -99,7 +101,7 @@ public class PlayerService {
     return playerRepository.updatePlayer(p);
   }
 
-  public void addAchievement(AddAchievementDto dto) {
+  public AddAchievementDtoOut addAchievement(AddAchievementDtoIn dto) {
     validate(dto, ValidationTypes.addAchievementDtoType);
     Player playerByName = findPlayerByName(dto.playerName());
     Optional<Achievement> achievement = playerByName.getAchievements().stream()
@@ -108,6 +110,9 @@ public class PlayerService {
     if (achievement.isEmpty()){
       playerByName.getAchievements().add(new Achievement(dto.achievementCode(), DateUtils.now()));
       updatePlayer(playerByName);
+      return new AddAchievementDtoOut(ActionAck.OK);
+    }else{
+      return new AddAchievementDtoOut(ActionAck.NOK);
     }
   }
 
