@@ -6,6 +6,7 @@ const outputChannel = 'output_q'
 class RabbitClient {
   async _getConnection () {
     if (!this._conn) {
+      console.log(`Asking host ${process.env.RABBITMQ_URI} for connection`)
       this._conn = await amqp.connect(process.env.RABBITMQ_URI)
     }
     return this._conn

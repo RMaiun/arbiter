@@ -27,18 +27,13 @@ public class PlayerController {
     return playerService.findAllPlayers(false);
   }
 
-  @PostMapping("/achievement/add")
-  public void addAchievement(AddAchievementDtoIn dto) {
-    playerService.addAchievement(dto);
-  }
-
   @PostMapping("/add")
   public IdDto addPlayer(@RequestBody AddPlayerDto addPlayerDto) {
     return playerService.addPlayer(addPlayerDto);
   }
 
   @PostMapping("/achievement/add")
-  public AddAchievementDtoOut addPlayer(@RequestBody AddAchievementDtoIn dto) {
+  public AddAchievementDtoOut addAchievement(@RequestBody AddAchievementDtoIn dto) {
     return playerService.addAchievement(dto);
   }
 }
