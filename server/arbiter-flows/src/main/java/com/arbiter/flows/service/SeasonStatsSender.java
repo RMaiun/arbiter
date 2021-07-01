@@ -70,13 +70,18 @@ public class SeasonStatsSender {
         var ranks = findPlayersWithRanks(snd.season());
         log.info("{} users will receive final stats notification", ranks.size());
         ranks.forEach(this::sendNotificationForPlayer);
+        seasonService.ackSendFinalNotifications();
       }
     }
   }
 
   private SeasonNotificationData shouldSend(ZonedDateTime currentDateTime) {
     var snd = seasonService.findSeasonWithoutNotifications()
-        .map(s -> new SeasonNotificationData(s.getName(), firstBeforeSecond(s.getName(), currentSeason()) && notLateToSend(currentDateTime)))
+        .map(s -> {
+          var isReady = firstBeforeSecond(s.getName(), currentSeason());
+          var isNotLate = notLateToSend(currentDateTime);
+          return new SeasonNotificationData(s.getName(), isReady && isNotLate);
+        })
         .orElse(new SeasonNotificationData(null, false));
     log.info("Current date {} criteria for sending notifications", snd.readyToBeProcessed() ? "passed" : "didn't pass");
     return snd;
@@ -139,7 +144,7 @@ public class SeasonStatsSender {
   }
 
   private String messageForPlayerWithDefinedRating(StringBuilder builder, PlayerRank rank) {
-    String winRate = new BigDecimal(rank.score()).multiply(BigDecimal.valueOf(100L)).setScale(1, RoundingMode.HALF_EVEN).toString();
+    String winRate = rank.score();
     return builder
         .append("Your achievements:")
         .append(LINE_SEPARATOR)
