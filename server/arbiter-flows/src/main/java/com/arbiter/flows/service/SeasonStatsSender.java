@@ -23,8 +23,6 @@ import com.arbiter.core.service.SeasonService;
 import com.arbiter.core.service.StatisticsService;
 import com.arbiter.flows.dto.OutputMessage;
 import com.arbiter.flows.dto.SeasonNotificationData;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -69,7 +67,7 @@ public class SeasonStatsSender {
         log.info("Final Season Stats Reports generation criteria were passed successfully for season {}", snd.season());
         var ranks = findPlayersWithRanks(snd.season());
         log.info("{} users will receive final stats notification", ranks.size());
-        ranks.forEach(this::sendNotificationForPlayer);
+        ranks.forEach(pr -> sendNotificationForPlayer(pr, snd.season()));
         seasonService.ackSendFinalNotifications();
       }
     }
@@ -125,8 +123,8 @@ public class SeasonStatsSender {
         .collect(Collectors.toList());
   }
 
-  private void sendNotificationForPlayer(PlayerRank playerRank) {
-    StringBuilder builder = messageBuilder(playerRank);
+  private void sendNotificationForPlayer(PlayerRank playerRank, String season) {
+    StringBuilder builder = messageBuilder(playerRank, season);
     String msg = playerRank.rank() > 0
         ? messageForPlayerWithDefinedRating(builder, playerRank)
         : messageForPlayerWithoutRating(builder, playerRank);
@@ -134,10 +132,10 @@ public class SeasonStatsSender {
     rabbitSender.send(OutputMessage.ok(playerRank.tid(), msgId(), msg));
   }
 
-  private StringBuilder messageBuilder(PlayerRank rank) {
+  private StringBuilder messageBuilder(PlayerRank rank, String season) {
     return new StringBuilder()
         .append(PREFIX)
-        .append(String.format("Season %s is successfully closed.", currentSeason()))
+        .append(String.format("Season %s is successfully closed.", season))
         .append(LINE_SEPARATOR)
         .append(String.format("%d players played %d games in total.", rank.allPlayers(), rank.allGames()))
         .append(LINE_SEPARATOR);
