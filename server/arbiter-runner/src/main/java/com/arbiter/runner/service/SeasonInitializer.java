@@ -1,6 +1,7 @@
-package com.arbiter.core.service;
+package com.arbiter.runner.service;
 
 import com.arbiter.core.domain.Season;
+import com.arbiter.core.service.SeasonService;
 import com.arbiter.core.utils.SeasonUtils;
 import org.springframework.stereotype.Service;
 

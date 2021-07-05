@@ -1,4 +1,4 @@
-package com.arbiter.flows.service;
+package com.arbiter.runner.service;
 
 import static com.arbiter.core.utils.DateUtils.notLateToSend;
 import static com.arbiter.core.utils.SeasonUtils.currentSeason;
@@ -23,6 +23,8 @@ import com.arbiter.core.service.SeasonService;
 import com.arbiter.core.service.StatisticsService;
 import com.arbiter.flows.dto.OutputMessage;
 import com.arbiter.flows.dto.SeasonNotificationData;
+import com.arbiter.flows.service.SafeJsonMapper;
+import com.arbiter.rabbit.service.RabbitSender;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -46,15 +48,17 @@ public class SeasonStatsSender {
   private final StatisticsService statisticsService;
   private final RoundsService roundsService;
   private final SeasonService seasonService;
+  private final SafeJsonMapper jsonMapper;
 
   public SeasonStatsSender(AppProperties appProps, PlayerService playerService, RabbitSender rabbitSender, StatisticsService statisticsService, RoundsService roundsService,
-      SeasonService seasonService) {
+      SeasonService seasonService, SafeJsonMapper jsonMapper) {
     this.appProps = appProps;
     this.playerService = playerService;
     this.rabbitSender = rabbitSender;
     this.statisticsService = statisticsService;
     this.roundsService = roundsService;
     this.seasonService = seasonService;
+    this.jsonMapper = jsonMapper;
   }
 
   public void sendFinalSeasonStats() {
@@ -128,8 +132,10 @@ public class SeasonStatsSender {
     String msg = playerRank.rank() > 0
         ? messageForPlayerWithDefinedRating(builder, playerRank)
         : messageForPlayerWithoutRating(builder, playerRank);
-    log.info(OutputMessage.ok(playerRank.tid(), msgId(), msg));
-    rabbitSender.send(OutputMessage.ok(playerRank.tid(), msgId(), msg));
+    OutputMessage outputMsg = OutputMessage.ok(playerRank.tid(), msgId(), msg);
+    log.info(msg);
+    var json = jsonMapper.outputMsgtoJson(outputMsg.data());
+    rabbitSender.send(json);
   }
 
   private StringBuilder messageBuilder(PlayerRank rank, String season) {

@@ -1,18 +1,9 @@
-package com.arbiter.flows.config;
+package com.arbiter.rabbit.config;
 
-import com.arbiter.core.config.AppProperties;
-import com.arbiter.core.service.UserRightsService;
-import com.arbiter.flows.postprocessor.PostProcessor;
-import com.arbiter.flows.processor.CommandProcessor;
-import com.arbiter.flows.service.CommandReceiver;
-import com.arbiter.flows.service.MetadataParser;
-import com.arbiter.flows.service.RabbitSender;
-import java.util.List;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -51,17 +42,6 @@ public class RabbitConfiguration {
     retryTemplate.setBackOffPolicy(backOffPolicy);
     rabbitTemplate.setRetryTemplate(retryTemplate);
     return rabbitTemplate;
-  }
-
-  @Bean
-  public SimpleMessageListenerContainer messageListenerContainer(MetadataParser metadataParser, RabbitSender rabbitSender,
-      List<CommandProcessor> processors, List<PostProcessor> postProcessors, UserRightsService userRightsService, AppProperties appProperties) {
-    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    container.setConnectionFactory(rabbitConnectionFactory());
-    container.setQueueNames(rabbitProperties.getInputQueue());
-    container.setMessageListener(new CommandReceiver(metadataParser, rabbitSender, processors, postProcessors, userRightsService, appProperties));
-    container.setConcurrentConsumers(8);
-    return container;
   }
 
   @Bean

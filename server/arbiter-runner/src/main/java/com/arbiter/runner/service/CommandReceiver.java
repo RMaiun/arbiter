@@ -1,4 +1,4 @@
-package com.arbiter.flows.service;
+package com.arbiter.runner.service;
 
 
 import static com.arbiter.flows.utils.IdGenerator.msgId;
@@ -6,9 +6,11 @@ import static com.arbiter.flows.utils.IdGenerator.msgId;
 import com.arbiter.core.config.AppProperties;
 import com.arbiter.core.service.UserRightsService;
 import com.arbiter.flows.dto.OutputMessage;
-import com.arbiter.flows.exception.InvalidCommandException;
 import com.arbiter.flows.postprocessor.PostProcessor;
 import com.arbiter.flows.processor.CommandProcessor;
+import com.arbiter.flows.service.SafeJsonMapper;
+import com.arbiter.rabbit.service.RabbitSender;
+import com.arbiter.runner.exception.InvalidCommandException;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,16 +28,18 @@ public class CommandReceiver implements MessageListener {
   private final List<PostProcessor> postProcessors;
   private final UserRightsService userRightsService;
   private final AppProperties appProperties;
+  private final SafeJsonMapper jsonMapper;
 
   public CommandReceiver(MetadataParser metadataParser, RabbitSender rabbitSender,
       List<CommandProcessor> processors, List<PostProcessor> postProcessors,
-      UserRightsService userRightsService, AppProperties appProperties) {
+      UserRightsService userRightsService, AppProperties appProperties, SafeJsonMapper jsonMapper) {
     this.metadataParser = metadataParser;
     this.rabbitSender = rabbitSender;
     this.processors = processors;
     this.postProcessors = postProcessors;
     this.userRightsService = userRightsService;
     this.appProperties = appProperties;
+    this.jsonMapper = jsonMapper;
   }
 
   @Override
@@ -49,7 +53,10 @@ public class CommandReceiver implements MessageListener {
           .findAny()
           .orElseThrow(() -> new InvalidCommandException(input.cmd()));
       var processResult = processor.process(input, msgId());
-      rabbitSender.send(processResult);
+      if (!processResult.data().result().isEmpty()) {
+        var json = jsonMapper.outputMsgtoJson(processResult.data());
+        rabbitSender.send(json);
+      }
       if (appProperties.notificationsEnabled) {
         postProcessors.stream()
             .filter(p -> p.commands().contains(input.cmd()))
@@ -59,7 +66,8 @@ public class CommandReceiver implements MessageListener {
     } catch (Throwable err) {
       log.error(err.getMessage());
       var error = OutputMessage.error(input.chatId(), msgId(), format(err));
-      rabbitSender.send(error);
+      var json = jsonMapper.outputMsgtoJson(error.data());
+      rabbitSender.send(json);
     }
     log.info("/{} was called by {} ({}) [{}ms]", input.cmd(), input.user(), input.tid(), System.currentTimeMillis() - start);
   }

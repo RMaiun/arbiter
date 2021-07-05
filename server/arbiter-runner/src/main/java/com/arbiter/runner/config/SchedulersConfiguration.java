@@ -1,8 +1,8 @@
-package com.arbiter.flows.config;
+package com.arbiter.runner.config;
 
 
-import com.arbiter.core.service.SeasonInitializer;
-import com.arbiter.flows.service.SeasonStatsSender;
+import com.arbiter.runner.service.SeasonInitializer;
+import com.arbiter.runner.service.SeasonStatsSender;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 

@@ -9,7 +9,8 @@ import com.arbiter.core.service.PlayerService;
 import com.arbiter.flows.dto.BotInputMessage;
 import com.arbiter.flows.dto.BotOutputMessage;
 import com.arbiter.flows.dto.OutputMessage;
-import com.arbiter.flows.service.RabbitSender;
+import com.arbiter.flows.service.SafeJsonMapper;
+import com.arbiter.rabbit.service.RabbitSender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
@@ -24,11 +25,13 @@ public class AddRoundPostProcessor implements PostProcessor {
   private final ObjectMapper mapper;
   private final PlayerService playerService;
   private final RabbitSender rabbitSender;
+  private final SafeJsonMapper jsonMapper;
 
-  public AddRoundPostProcessor(ObjectMapper mapper, PlayerService playerService, RabbitSender rabbitSender) {
+  public AddRoundPostProcessor(ObjectMapper mapper, PlayerService playerService, RabbitSender rabbitSender, SafeJsonMapper jsonMapper) {
     this.mapper = mapper;
     this.playerService = playerService;
     this.rabbitSender = rabbitSender;
+    this.jsonMapper = jsonMapper;
   }
 
   @Override
@@ -58,7 +61,8 @@ public class AddRoundPostProcessor implements PostProcessor {
     if (p.isNotificationsEnabled() && nonNull(p.getTid())) {
       var dto = new BotOutputMessage(p.getTid(), msgId, formatNotification(opponents, winner));
       var msg = OutputMessage.ok(dto);
-      rabbitSender.send(msg);
+      var json = jsonMapper.outputMsgtoJson(msg.data());
+      rabbitSender.send(json);
     }
   }
 

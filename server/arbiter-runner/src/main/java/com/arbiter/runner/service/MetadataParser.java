@@ -1,7 +1,7 @@
-package com.arbiter.flows.service;
+package com.arbiter.runner.service;
 
 import com.arbiter.flows.dto.BotInputMessage;
-import com.arbiter.flows.exception.MetadataParserException;
+import com.arbiter.runner.exception.MetadataParserException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class MetadataParser {
     this.mapper = mapper;
   }
 
-  BotInputMessage parseCommand(byte[] body) {
+  public BotInputMessage parseCommand(byte[] body) {
     try {
       return mapper.readValue(body, BotInputMessage.class);
     } catch (IOException e) {

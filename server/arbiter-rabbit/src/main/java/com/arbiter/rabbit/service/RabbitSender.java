@@ -1,8 +1,7 @@
-package com.arbiter.flows.service;
+package com.arbiter.rabbit.service;
 
-import com.arbiter.flows.config.RabbitProperties;
-import com.arbiter.flows.dto.OutputMessage;
-import com.arbiter.flows.exception.RabbitSenderException;
+import com.arbiter.rabbit.config.RabbitProperties;
+import com.arbiter.rabbit.exception.RabbitSenderException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
@@ -22,15 +21,16 @@ public class RabbitSender {
     this.rabbitProps = rabbitProps;
   }
 
-  public void send(OutputMessage msg) {
+  public void send(String jsonMsg) {
+    rabbitTemplate.send("", rabbitProps.getOutputQueue(), new Message(jsonMsg.getBytes()));
+  }
+
+  public void fireEvent(String jsonEvent) {
     try {
-      if (!msg.data().result().isEmpty()) {
-        String data =  objectMapper.writeValueAsString(msg.data());
-        rabbitTemplate.send("", rabbitProps.getOutputQueue(), new Message(data.getBytes()));
-      }
+      String data = objectMapper.writeValueAsString(jsonEvent);
+      rabbitTemplate.send("", rabbitProps.getEventQueue(), new Message(data.getBytes()));
     } catch (JsonProcessingException e) {
       throw new RabbitSenderException(e);
     }
-
   }
 }

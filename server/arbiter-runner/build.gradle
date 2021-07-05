@@ -1,0 +1,7 @@
+dependencies {
+    implementation project(':server:arbiter-core')
+    implementation project(':server:arbiter-rabbit')
+    implementation project(':server:arbiter-flows')
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+}

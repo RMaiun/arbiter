@@ -2,4 +2,5 @@ rootProject.name = 'arbiter'
 include 'server'
 include 'server:arbiter-core'
 include 'server:arbiter-flows'
-
+include 'server:arbiter-rabbit'
+include 'server:arbiter-runner'

@@ -1,4 +1,4 @@
-package com.arbiter.flows.config;
+package com.arbiter.rabbit.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +15,7 @@ public class RabbitProperties {
   private String inputQueue;
   private String outputQueue;
   private String binaryQueue;
+  private String eventQueue;
 
   public String getUsername() {
     return username;
@@ -78,5 +79,13 @@ public class RabbitProperties {
 
   public void setBinaryQueue(String binaryQueue) {
     this.binaryQueue = binaryQueue;
+  }
+
+  public String getEventQueue() {
+    return eventQueue;
+  }
+
+  public void setEventQueue(String eventQueue) {
+    this.eventQueue = eventQueue;
   }
 }
