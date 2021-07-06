@@ -24,15 +24,14 @@ public class SeasonUtils {
     return formatSeason(quarter, year);
   }
 
-  public static String previousSeason() {
-    ZonedDateTime now = DateUtils.now();
-    int month = now.getMonth().getValue();
-    int year = now.getYear();
-    int q = quarterForMonth(month);
-    String season = formatSeason(q, year);
+  public static String previousSeason(String season) {
     Pair<LocalDate, LocalDate> gate = seasonGate(season);
     LocalDate localDate = gate.getLeft().minusDays(1);
     return seasonFromDate(ZonedDateTime.of(localDate, LocalTime.now(), ZoneOffset.UTC));
+  }
+
+  public static String previousSeason() {
+    return previousSeason(currentSeason());
   }
 
   public static String currentSeason() {

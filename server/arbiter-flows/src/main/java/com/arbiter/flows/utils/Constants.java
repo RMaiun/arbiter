@@ -10,4 +10,5 @@ public interface Constants {
   String PREFIX = SUFFIX + LINE_SEPARATOR;
   String DEFAULT_RESULT = "";
   String PERCENT = "%";
+  String NA = "n/a";
 }

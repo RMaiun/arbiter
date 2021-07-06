@@ -4,6 +4,7 @@ import static com.arbiter.core.utils.DateUtils.notLateToSend;
 import static com.arbiter.core.utils.SeasonUtils.currentSeason;
 import static com.arbiter.core.utils.SeasonUtils.firstBeforeSecond;
 import static com.arbiter.flows.utils.Constants.LINE_SEPARATOR;
+import static com.arbiter.flows.utils.Constants.NA;
 import static com.arbiter.flows.utils.Constants.PREFIX;
 import static com.arbiter.flows.utils.Constants.SUFFIX;
 import static com.arbiter.flows.utils.IdGenerator.msgId;
@@ -32,9 +33,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class SeasonStatsSender {
@@ -68,7 +71,11 @@ public class SeasonStatsSender {
         log.info("Final Season Stats Reports generation criteria were passed successfully for season {}", snd.season());
         var ranks = findPlayersWithRanks(snd.season());
         log.info("{} users will receive final stats notification", ranks.size());
-        ranks.forEach(pr -> sendNotificationForPlayer(pr, snd.season()));
+        var currentStats = statisticsService.seasonShortInfoStatistics(currentSeason()).playersRating();
+        var winner = !CollectionUtils.isEmpty(currentStats) && currentStats.get(0) != null
+            ? currentStats.get(0).surname()
+            : NA;
+        ranks.forEach(pr -> sendNotificationForPlayer(pr, snd.season(), winner));
         seasonService.ackSendFinalNotifications();
       }
     }
@@ -124,8 +131,8 @@ public class SeasonStatsSender {
         .collect(Collectors.toList());
   }
 
-  private void sendNotificationForPlayer(PlayerRank playerRank, String season) {
-    var builder = messageBuilder(playerRank, season);
+  private void sendNotificationForPlayer(PlayerRank playerRank, String season, String winner) {
+    var builder = messageBuilder(playerRank, season, winner);
     var msg = playerRank.rank() > 0
         ? messageForPlayerWithDefinedRating(builder, playerRank)
         : messageForPlayerWithoutRating(builder, playerRank);
@@ -134,25 +141,29 @@ public class SeasonStatsSender {
     rabbitSender.send(outputMsg);
   }
 
-  private StringBuilder messageBuilder(PlayerRank rank, String season) {
+  private StringBuilder messageBuilder(PlayerRank rank, String season, String winner) {
     return new StringBuilder()
         .append(PREFIX)
-        .append(String.format("Season %s is successfully closed.", season))
+        .append("Вітаю!")
         .append(LINE_SEPARATOR)
-        .append(String.format("%d players played %d games in total.", rank.allPlayers(), rank.allGames()))
+        .append(String.format("Сезон %s успішно завершено.", season))
+        .append(LINE_SEPARATOR)
+        .append(String.format("Наш переможець - %s", StringUtils.capitalize(winner)))
+        .append(LINE_SEPARATOR)
+        .append(String.format("В цілому %d гравців зіграли %d ігор.", rank.allPlayers(), rank.allGames()))
         .append(LINE_SEPARATOR);
   }
 
   private String messageForPlayerWithDefinedRating(StringBuilder builder, PlayerRank rank) {
     var winRate = rank.score();
     return builder
-        .append("Your achievements:")
+        .append("Твої досягнення:")
         .append(LINE_SEPARATOR)
-        .append(String.format("- #%d in rating", rank.rank()))
+        .append(String.format("Позиція у рейтингу - #%d", rank.rank()))
         .append(LINE_SEPARATOR)
-        .append(String.format("- win rate %s%%", winRate))
+        .append(String.format("Win Rate - %s%%", winRate))
         .append(LINE_SEPARATOR)
-        .append(String.format("- games played: %d", rank.gamesPlayed()))
+        .append(String.format("Зіграно ігор - %d", rank.gamesPlayed()))
         .append(LINE_SEPARATOR)
         .append("\uD83D\uDC4D\uD83D\uDC4D\uD83D\uDC4D")
         .append(SUFFIX)
@@ -161,17 +172,15 @@ public class SeasonStatsSender {
 
   private String messageForPlayerWithoutRating(StringBuilder builder, PlayerRank rank) {
     return builder
-        .append(String.format("You've played %d games in this season.", rank.gamesPlayed()))
+        .append("Твої досягнення:")
         .append(LINE_SEPARATOR)
-        .append(String.format("Unfortunately you must play %d games", appProps.expectedGames))
+        .append(String.format("Прийнято участь у %d іграх.", rank.gamesPlayed()))
         .append(LINE_SEPARATOR)
-        .append("to be included into rating.")
+        .append(String.format("На жаль, потрібно зіграти %d ігор,", appProps.expectedGames))
         .append(LINE_SEPARATOR)
-        .append("Hope that in next season")
+        .append("щоб бути включеним в рейтинг.")
         .append(LINE_SEPARATOR)
-        .append("you will reach our game limit")
-        .append(LINE_SEPARATOR)
-        .append("and will show us your best.")
+        .append("Сподіваюсь, що в наступному сезоні у тебе все вийде і ти покажеш круту гру.")
         .append(LINE_SEPARATOR)
         .append("⭐⭐⭐")
         .append(SUFFIX)
