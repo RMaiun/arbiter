@@ -161,6 +161,15 @@ class CmdHandlers {
     await this._rc.publish(this._dtoIn('addPlayer', ctx, data))
   }
 
+  async broadcastMessage (ctx) {
+    const args = this._parseArgs(ctx.message.text)
+    const data = {
+      author: ctx.message.from.id,
+      message: args[0]
+    }
+    await this._rc.publish(this._dtoIn('broadcastMessage'), ctx, data)
+  }
+
   async _loadFile (uri, method) {
     const response = await axios({
       url: uri,

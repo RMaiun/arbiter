@@ -10,6 +10,7 @@ import static com.arbiter.core.validation.functions.StringValidationFunctions.no
 import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyLetters;
 import static com.arbiter.core.validation.functions.StringValidationFunctions.onlyNumbers;
 
+import com.arbiter.core.dto.broadcast.StoreBroadcastDto;
 import com.arbiter.core.dto.player.AddAchievementDtoIn;
 import com.arbiter.core.dto.player.AddPlayerDto;
 import com.arbiter.core.dto.round.AddRoundDto;
@@ -71,4 +72,9 @@ public interface ValidationTypes {
       schema()
           .withRule(requiredRule(dto.player(), "player", notEmpty(), onlyLetters()))
           .withRule(rule(dto.season(), "season", notEmpty(), isSeason()));
+
+  ValidationType<StoreBroadcastDto> storeBroadcastDtoDtoType = dto ->
+      schema()
+          .withRule(requiredRule(dto.author(), "author", notEmpty(), onlyLetters()))
+          .withRule(requiredRule(dto.message(), "message", notEmpty(), length(2,500)));
 }

@@ -15,6 +15,7 @@ public interface Commands extends Constants {
   String STORE_LOG_CMD = "storeLog";
   String ACTIVATE_CMD = "activate";
   String DEACTIVATE_CMD = "deactivate";
+  String BROADCAST_MSG_CMD = "broadcastMessage";
 
   List<String> commands();
 }
