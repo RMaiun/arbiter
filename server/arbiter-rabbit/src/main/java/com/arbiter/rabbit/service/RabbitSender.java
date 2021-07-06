@@ -1,6 +1,7 @@
 package com.arbiter.rabbit.service;
 
 import com.arbiter.rabbit.config.RabbitProperties;
+import com.arbiter.rabbit.dto.OutputMessage;
 import com.arbiter.rabbit.exception.RabbitSenderException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,14 +22,12 @@ public class RabbitSender {
     this.rabbitProps = rabbitProps;
   }
 
-  public void send(String jsonMsg) {
-    rabbitTemplate.send("", rabbitProps.getOutputQueue(), new Message(jsonMsg.getBytes()));
-  }
-
-  public void fireEvent(String jsonEvent) {
+  public void send(OutputMessage msg) {
     try {
-      String data = objectMapper.writeValueAsString(jsonEvent);
-      rabbitTemplate.send("", rabbitProps.getEventQueue(), new Message(data.getBytes()));
+      if (!msg.data().result().isEmpty()) {
+        String data = objectMapper.writeValueAsString(msg.data());
+        rabbitTemplate.send("", rabbitProps.getOutputQueue(), new Message(data.getBytes()));
+      }
     } catch (JsonProcessingException e) {
       throw new RabbitSenderException(e);
     }

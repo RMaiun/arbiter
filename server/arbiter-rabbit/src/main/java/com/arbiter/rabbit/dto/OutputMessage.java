@@ -1,4 +1,4 @@
-package com.arbiter.flows.dto;
+package com.arbiter.rabbit.dto;
 
 public record OutputMessage(boolean error, BotOutputMessage data) {
 

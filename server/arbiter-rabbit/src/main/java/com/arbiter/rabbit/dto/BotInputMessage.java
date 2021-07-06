@@ -1,4 +1,4 @@
-package com.arbiter.flows.dto;
+package com.arbiter.rabbit.dto;
 
 import java.util.Map;
 

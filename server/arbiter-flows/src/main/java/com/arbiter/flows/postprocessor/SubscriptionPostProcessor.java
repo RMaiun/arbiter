@@ -1,9 +1,9 @@
 package com.arbiter.flows.postprocessor;
 
 import com.arbiter.core.dto.subscription.LinkTidDto;
-import com.arbiter.flows.dto.BotInputMessage;
-import com.arbiter.flows.dto.BotOutputMessage;
-import com.arbiter.flows.service.SafeJsonMapper;
+import com.arbiter.rabbit.dto.BotInputMessage;
+import com.arbiter.rabbit.dto.BotOutputMessage;
+import com.arbiter.rabbit.dto.OutputMessage;
 import com.arbiter.rabbit.service.RabbitSender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
@@ -15,12 +15,10 @@ public class SubscriptionPostProcessor implements PostProcessor {
 
   private final ObjectMapper mapper;
   private final RabbitSender rabbitSender;
-  private final SafeJsonMapper jsonMapper;
 
-  public SubscriptionPostProcessor(ObjectMapper mapper, RabbitSender rabbitSender, SafeJsonMapper jsonMapper) {
+  public SubscriptionPostProcessor(ObjectMapper mapper, RabbitSender rabbitSender) {
     this.mapper = mapper;
     this.rabbitSender = rabbitSender;
-    this.jsonMapper = jsonMapper;
   }
 
   @Override
@@ -33,7 +31,6 @@ public class SubscriptionPostProcessor implements PostProcessor {
     var message = String.format("%s Реєстрація пройшла успішно%s", PREFIX, SUFFIX);
     var data = mapper.convertValue(input.data(), LinkTidDto.class);
     var dto = new BotOutputMessage(data.tid(), msgId, message);
-    var json = jsonMapper.outputMsgtoJson(dto);
-    rabbitSender.send(json);
+    rabbitSender.send(OutputMessage.ok(dto));
   }
 }

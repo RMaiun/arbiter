@@ -1,6 +1,6 @@
 package com.arbiter.runner.service;
 
-import com.arbiter.flows.dto.BotInputMessage;
+import com.arbiter.rabbit.dto.BotInputMessage;
 import com.arbiter.runner.exception.MetadataParserException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

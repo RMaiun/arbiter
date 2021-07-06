@@ -1,6 +1,6 @@
 package com.arbiter.flows.postprocessor;
 
-import com.arbiter.flows.dto.BotInputMessage;
+import com.arbiter.rabbit.dto.BotInputMessage;
 import com.arbiter.flows.utils.Commands;
 
 public interface PostProcessor extends Commands {
