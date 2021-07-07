@@ -6,8 +6,8 @@ dotenv.config()
 console.log('BOT: Configs were loaded')
 
 const br = new BotRunner(process.env.TOKEN)
-delay(20000)
-  .then(x => br.initBot())
+delay(process.env.START_DELAY)
+  .then(() => br.initBot())
   .then(bot => {
     process.once('SIGTERM', () => bot.stop('SIGTERM'))
     process.once('SIGINT', () => bot.stop('SIGINT'))
@@ -20,6 +20,6 @@ delay(20000)
   })
 
 function delay (ms) {
-  console.log('BOT: Delay for 20 sec')
+  console.log(`BOT: Delay for ${process.env.START_DELAY} sec`)
   return new Promise(resolve => setTimeout(resolve, ms))
 }

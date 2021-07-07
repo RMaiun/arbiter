@@ -58,7 +58,7 @@ public class CommandReceiver implements MessageListener {
             .ifPresent(pp -> pp.postProcess(input, msgId()));
       }
     } catch (Throwable err) {
-      log.error(err.getMessage());
+      err.printStackTrace();
       var error = OutputMessage.error(input.chatId(), msgId(), format(err));
       rabbitSender.send(error);
     }

@@ -164,10 +164,10 @@ class CmdHandlers {
   async broadcastMessage (ctx) {
     const args = this._parseArgs(ctx.message.text)
     const data = {
-      author: ctx.message.from.id,
-      message: args[0]
+      author: `${ctx.message.from.id}`,
+      message: args.join(' ')
     }
-    await this._rc.publish(this._dtoIn('broadcastMessage'), ctx, data)
+    await this._rc.publish(this._dtoIn('broadcastMessage', ctx, data))
   }
 
   async _loadFile (uri, method) {

@@ -75,6 +75,6 @@ public interface ValidationTypes {
 
   ValidationType<StoreBroadcastDto> storeBroadcastDtoDtoType = dto ->
       schema()
-          .withRule(requiredRule(dto.author(), "author", notEmpty(), onlyLetters()))
+          .withRule(requiredRule(dto.author(), "author",notEmpty(), onlyNumbers()))
           .withRule(requiredRule(dto.message(), "message", notEmpty(), length(2,500)));
 }
