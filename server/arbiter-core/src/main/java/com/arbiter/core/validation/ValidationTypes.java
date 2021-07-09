@@ -65,8 +65,7 @@ public interface ValidationTypes {
 
   ValidationType<AddAchievementDtoIn> addAchievementDtoType = dto ->
       schema()
-          .withRule(requiredRule(dto.playerName(), "playerName", notEmpty(), onlyLetters()))
-          .withRule(requiredRule(dto.achievementCode(), "achievementCode", notEmpty()));
+          .withRule(requiredRule(dto.playerName(), "playerName", notEmpty(), onlyLetters()));
 
   ValidationType<ListRoundsForPlayerDtoIn> listRoundsForPlayerDtoType = dto ->
       schema()

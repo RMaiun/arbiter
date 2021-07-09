@@ -1,5 +1,7 @@
 package com.arbiter.core.dto.player;
 
-public record AddAchievementDtoOut(ActionAck ack) {
+import java.util.List;
+
+public record AddAchievementDtoOut(List<String> stored, List<String> skipped) {
 
 }

@@ -34,6 +34,6 @@ public class PlayerController {
 
   @PostMapping("/achievement/add")
   public AddAchievementDtoOut addAchievement(@RequestBody AddAchievementDtoIn dto) {
-    return playerService.addAchievement(dto);
+    return playerService.addAchievements(dto);
   }
 }

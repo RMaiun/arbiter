@@ -6,7 +6,6 @@ import com.arbiter.core.domain.Achievement;
 import com.arbiter.core.domain.Player;
 import com.arbiter.core.dto.IdDto;
 import com.arbiter.core.dto.player.AbsentPlayersDto;
-import com.arbiter.core.dto.player.ActionAck;
 import com.arbiter.core.dto.player.ActivatePlayersDto;
 import com.arbiter.core.dto.player.AddAchievementDtoIn;
 import com.arbiter.core.dto.player.AddAchievementDtoOut;
@@ -21,7 +20,7 @@ import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.validation.ValidationTypes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -101,19 +100,18 @@ public class PlayerService {
     return playerRepository.updatePlayer(p);
   }
 
-  public AddAchievementDtoOut addAchievement(AddAchievementDtoIn dto) {
+  public AddAchievementDtoOut addAchievements(AddAchievementDtoIn dto) {
     validate(dto, ValidationTypes.addAchievementDtoType);
     Player playerByName = findPlayerByName(dto.playerName());
-    Optional<Achievement> achievement = playerByName.getAchievements().stream()
-        .filter(a -> a.getCode().equals(dto.achievementCode()))
-        .findAny();
-    if (achievement.isEmpty()){
-      playerByName.getAchievements().add(new Achievement(dto.achievementCode(), DateUtils.now()));
-      updatePlayer(playerByName);
-      return new AddAchievementDtoOut(ActionAck.OK);
-    }else{
-      return new AddAchievementDtoOut(ActionAck.NOK);
-    }
+    List<String> existedAchievements = playerByName.getAchievements().stream()
+        .map(Achievement::getCode)
+        .collect(Collectors.toList());
+
+    Map<Boolean, List<String>> segregatedAchievements = dto.achievementCodes().stream()
+        .collect(Collectors.partitioningBy(existedAchievements::contains));
+    segregatedAchievements.get(false).forEach(a -> playerByName.getAchievements().add(new Achievement(a, DateUtils.now())));
+    updatePlayer(playerByName);
+    return new AddAchievementDtoOut(segregatedAchievements.get(false), segregatedAchievements.get(true));
   }
 
   private Player findPlayerByCriteria(Criteria criteria) {
