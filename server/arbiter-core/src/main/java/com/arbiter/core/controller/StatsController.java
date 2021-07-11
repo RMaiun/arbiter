@@ -2,6 +2,7 @@ package com.arbiter.core.controller;
 
 
 import com.arbiter.core.dto.stats.SeasonShortStats;
+import com.arbiter.core.dto.stats.SeasonStatsForPlayerDtoOut;
 import com.arbiter.core.dto.stats.SeasonStatsRows;
 import com.arbiter.core.service.StatisticsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,5 +28,10 @@ public class StatsController {
   @GetMapping("/short/{season}")
   public SeasonShortStats generalSeasonStatistics(@PathVariable String season) {
     return statisticsService.seasonShortInfoStatistics(season);
+  }
+
+  @GetMapping("/extended/{player}")
+  public SeasonStatsForPlayerDtoOut extendedSeasonStatsForPlayer(@PathVariable String player) {
+    return statisticsService.allSeasonsStatsForPlayer(player);
   }
 }

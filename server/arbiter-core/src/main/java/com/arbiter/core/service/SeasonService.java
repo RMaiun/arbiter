@@ -5,6 +5,7 @@ import com.arbiter.core.exception.SeasonNotFoundException;
 import com.arbiter.core.repository.SeasonRepository;
 import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.utils.SeasonUtils;
+import java.util.List;
 import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,5 +49,9 @@ public class SeasonService {
       log.warn("Expected season ({}) is not the current one ({})", expected, SeasonUtils.currentSeason());
       throw new SeasonNotFoundException(expected);
     }
+  }
+
+  public List<Season> findAllSeasons(){
+    return seasonRepository.listAll();
   }
 }

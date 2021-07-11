@@ -70,10 +70,10 @@ public interface ValidationTypes {
   ValidationType<ListRoundsForPlayerDtoIn> listRoundsForPlayerDtoType = dto ->
       schema()
           .withRule(requiredRule(dto.player(), "player", notEmpty(), onlyLetters()))
-          .withRule(rule(dto.season(), "season", notEmpty(), isSeason()));
+          .withRule(requiredRule(dto.season(), "season", notEmpty(), isSeason()));
 
   ValidationType<StoreBroadcastDto> storeBroadcastDtoDtoType = dto ->
       schema()
-          .withRule(requiredRule(dto.author(), "author",notEmpty(), onlyNumbers()))
-          .withRule(requiredRule(dto.message(), "message", notEmpty(), length(2,500)));
+          .withRule(requiredRule(dto.author(), "author", notEmpty(), onlyNumbers()))
+          .withRule(requiredRule(dto.message(), "message", notEmpty(), length(2, 500)));
 }

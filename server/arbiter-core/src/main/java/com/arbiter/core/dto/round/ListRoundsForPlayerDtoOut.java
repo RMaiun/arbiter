@@ -1,7 +1,10 @@
 package com.arbiter.core.dto.round;
 
-import java.util.List;
-
-public record ListRoundsForPlayerDtoOut(int roundsFound, List<FullRound> rounds) {
+public record ListRoundsForPlayerDtoOut(String player,
+                                        String season,
+                                        int roundsFoundInSeason,
+                                        int shutoutRoundsInSeason,
+                                        int roundsTotal,
+                                        int winShutoutRoundsTotal) {
 
 }

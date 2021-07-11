@@ -1,7 +1,6 @@
 package com.arbiter.core.service;
 
 
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
 import com.arbiter.core.domain.Round;
@@ -20,7 +19,6 @@ import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.utils.SeasonUtils;
 import com.arbiter.core.validation.ValidationTypes;
 import com.arbiter.core.validation.Validator;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -60,24 +58,27 @@ public class RoundsService {
 
   public ListRoundsForPlayerDtoOut roundsForPlayer(ListRoundsForPlayerDtoIn dtoIn) {
     Validator.validate(dtoIn, ValidationTypes.listRoundsForPlayerDtoType);
-    List<Round> rounds;
-    if (nonNull(dtoIn.season())) {
-      rounds = roundRepository.listRoundsBySeason(dtoIn.season()).stream()
-          .filter(r -> List.of(r.getWinner1(), r.getWinner2(), r.getLoser1(), r.getLoser2()).contains(dtoIn.player()))
-          .collect(toList());
-    } else {
-      rounds = roundRepository.listAllRoundsByPlayer(dtoIn.player(), dtoIn.onlyShutout());
-    }
-    List<Round> filteredRounds = rounds.stream()
-        .filter(r -> !dtoIn.onlyShutout() || r.isShutout())
+    List<Round> rounds = roundRepository.listRoundsBySeason(dtoIn.season());
+    List<Round> roundsByPlayer = rounds.stream()
+        .filter(r -> List.of(r.getWinner1(), r.getWinner2(), r.getLoser1(), r.getLoser2()).contains(dtoIn.player()))
         .collect(toList());
+    int roundsFoundInSeason = roundsByPlayer.size();
 
-    int size = filteredRounds.size();
-    List<FullRound> result = dtoIn.includeRounds()
-        ? filteredRounds.stream().map(FullRound::fromDomain).collect(toList())
-        : Collections.emptyList();
+    List<Round> shutoutByPlayer = roundsByPlayer.stream()
+        .filter(Round::isShutout)
+        .filter(r -> List.of(r.getWinner1(), r.getWinner2()).contains(dtoIn.player()))
+        .collect(toList());
+    int shutoutRoundsInSeason = shutoutByPlayer.size();
 
-    return new ListRoundsForPlayerDtoOut(size, result);
+    List<Round> allRoundsByPlayer = roundRepository.listAllRoundsByPlayer(dtoIn.player(), false);
+    List<Round> allShutoutRoundsByPlayer = allRoundsByPlayer.stream()
+        .filter(Round::isShutout)
+        .filter(r -> List.of(r.getWinner1(), r.getWinner2()).contains(dtoIn.player()))
+        .collect(toList());
+    int roundsTotal = allRoundsByPlayer.size();
+    int winShutoutRoundsTotal = allShutoutRoundsByPlayer.size();
+
+    return new ListRoundsForPlayerDtoOut(dtoIn.player(), dtoIn.season(), roundsFoundInSeason, shutoutRoundsInSeason, roundsTotal, winShutoutRoundsTotal);
   }
 
   public IdDto saveRound(AddRoundDto dto) {
