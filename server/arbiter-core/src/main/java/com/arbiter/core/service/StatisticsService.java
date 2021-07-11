@@ -48,6 +48,7 @@ public class StatisticsService {
       var ws = stats.worstStreak();
       return new SeasonExtendedStats(s.getName(), winner, bs, ws);
     }).collect(Collectors.toList());
-    return new SeasonStatsForPlayerDtoOut(player, allSeasonStats);
+    var playerSeasons = roundsService.numberOfPlayerSeasonsForPlayer(player);
+    return new SeasonStatsForPlayerDtoOut(player, playerSeasons, allSeasonStats);
   }
 }

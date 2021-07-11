@@ -22,20 +22,17 @@ import com.arbiter.core.dto.round.FullRound;
 import com.arbiter.core.dto.stats.UnrankedStats;
 import com.arbiter.core.utils.DateUtils;
 import com.arbiter.core.utils.SeasonUtils;
-import io.vavr.Tuple4;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
@@ -120,39 +117,46 @@ public class StatsCalculator {
   }
 
   private Pair<Optional<Streak>, Optional<Streak>> calculateStreaks(List<FullRound> rounds) {
-    Map<String, Tuple4<Integer, Integer, Integer, Integer>> results = rounds.stream()
+    var defaultDateTime = ZonedDateTime.now().minusYears(100);
+    Map<String, StreakData> results = rounds.stream()
         .flatMap(r -> Stream.of(r.winner1(), r.winner2(), r.loser1(), r.loser2()))
         .distinct()
-        .collect(toMap(x -> x, x -> new Tuple4<>(0, 0, 0, 0)));
+        .collect(toMap(x -> x, x -> new StreakData(0, 0, 0, 0, defaultDateTime, defaultDateTime)));
 
     rounds.forEach(r -> {
-      checkStreak(results, r.winner1(), 1);
-      checkStreak(results, r.winner2(), 1);
-      checkStreak(results, r.loser1(), -1);
-      checkStreak(results, r.loser2(), -1);
+      checkStreak(results, r.winner1(), 1, r.created());
+      checkStreak(results, r.winner2(), 1, r.created());
+      checkStreak(results, r.loser1(), -1, r.created());
+      checkStreak(results, r.loser2(), -1, r.created());
     });
 
     Optional<Streak> best = results.entrySet().stream()
-        .map(e -> new Streak(e.getKey(), e.getValue()._2))
-        .max(comparing(Streak::games));
+        .map(e -> new TmpStreak(e.getKey(), e.getValue().w(), e.getValue().max()))
+        .sorted(Comparator.comparing(TmpStreak::shutout).reversed().thenComparing(TmpStreak::upd))
+        .findAny()
+        .map(ts -> new Streak(ts.player, ts.shutout));
 
     Optional<Streak> worst = results.entrySet().stream()
-        .map(e -> new Streak(e.getKey(), e.getValue()._4))
-        .max(comparing(Streak::games));
+        .map(e -> new TmpStreak(e.getKey(), e.getValue().l(), e.getValue().min()))
+        .sorted(Comparator.comparing(TmpStreak::shutout).reversed().thenComparing(TmpStreak::upd))
+        .findAny()
+        .map(ts -> new Streak(ts.player, ts.shutout));
     return Pair.of(best, worst);
   }
 
-  private void checkStreak(Map<String, Tuple4<Integer, Integer, Integer, Integer>> results,
-      String surname, int score) {
-    Tuple4<Integer, Integer, Integer, Integer> found = results.get(surname);
+  private void checkStreak(Map<String, StreakData> results,
+      String surname, int score, ZonedDateTime zdt) {
+    StreakData found = results.get(surname);
     if (score > 0) {
-      int currentWin = found._1 + 1;
-      int maxWin = currentWin > found._2 ? currentWin : found._2;
-      results.put(surname, new Tuple4<>(currentWin, maxWin, 0, found._4));
+      int currentWin = found.curW + 1;
+      int maxWin = currentWin > found.w ? currentWin : found.w;
+      ZonedDateTime max = currentWin > found.w ? zdt : found.max;
+      results.put(surname, new StreakData(currentWin, maxWin, 0, found.l, max, found.min));
     } else {
-      int currentLose = found._3 + 1;
-      int maxLose = currentLose > found._4 ? currentLose : found._4;
-      results.put(surname, new Tuple4<>(0, found._2, currentLose, maxLose));
+      int currentLose = found.curL + 1;
+      int maxLose = currentLose > found.l ? currentLose : found.l;
+      ZonedDateTime min = currentLose > found.l ? zdt : found.min;
+      results.put(surname, new StreakData(0, found.w(), currentLose, maxLose, found.max, min));
     }
   }
 
@@ -256,5 +260,13 @@ public class StatsCalculator {
     } else {
       return appProps.losePoints;
     }
+  }
+
+  static record StreakData(int curW, int w, int curL, int l, ZonedDateTime max, ZonedDateTime min) {
+
+  }
+
+  static record TmpStreak(String player, int shutout, ZonedDateTime upd) {
+
   }
 }

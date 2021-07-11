@@ -99,6 +99,10 @@ public class RoundsService {
     return FullRound.fromDomain(round);
   }
 
+  public int numberOfPlayerSeasonsForPlayer(String player) {
+    return roundRepository.countSeasonsForPlayer(player);
+  }
+
   private void checkAllPlayersAreDifferent(AddRoundDto dto) {
     List<String> playersList = List.of(dto.w1(), dto.w2(), dto.l1(), dto.l2());
     Set<String> playersSet = new HashSet<>(playersList);

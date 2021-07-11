@@ -34,7 +34,7 @@ public class RoundRepository {
         Criteria.where("loser1").is(player),
         Criteria.where("loser2").is(player)
     );
-    if (shutout){
+    if (shutout) {
       criteria.and("shutout").is(true);
     }
     return template.find(new Query().addCriteria(criteria), Round.class);
@@ -62,6 +62,18 @@ public class RoundRepository {
   public List<Round> listLastRoundsBeforeDate(ZonedDateTime before) {
     Criteria criteria = Criteria.where("created").lte(before);
     return template.find(new Query(criteria), Round.class);
+  }
+
+  public int countSeasonsForPlayer(String player) {
+    Criteria criteria = new Criteria();
+    criteria.orOperator(
+        Criteria.where("winner1").is(player),
+        Criteria.where("winner2").is(player),
+        Criteria.where("loser1").is(player),
+        Criteria.where("loser2").is(player)
+    );
+
+    return template.findDistinct(new Query(criteria), "season", Round.class, String.class).size();
   }
 
   public Long removeAll() {
