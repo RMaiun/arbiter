@@ -39,17 +39,17 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AddPlayerCmdProcessorTest.TestConfig.class})
+@ContextConfiguration(classes = {AddPlayerProcessorTest.TestConfig.class})
 @TestPropertySource(locations = "classpath:/test.properties")
 @DisplayName("AddPlayerCmdProcessor Test")
-public class AddPlayerCmdProcessorTest {
+public class AddPlayerProcessorTest {
 
   @Autowired
   private PlayerRepository playerRepository;
   @Autowired
   private ObjectMapper objectMapper;
   @Autowired
-  private AddPlayerCmdProcessor addPlayerCmdProcessor;
+  private AddPlayerProcessor addPlayerProcessor;
 
 
   @Test
@@ -59,7 +59,7 @@ public class AddPlayerCmdProcessorTest {
     when(playerRepository.savePlayer(any(Player.class))).thenReturn(testPlayer);
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "111", false, "test1"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "12345", "111", "TestUserName", jsonData);
-    OutputMessage dtoOut = addPlayerCmdProcessor.process(dtoIn, 1);
+    OutputMessage dtoOut = addPlayerProcessor.process(dtoIn, 1);
     assertNotNull(dtoOut);
     assertFalse(dtoOut.error());
     BotOutputMessage data = dtoOut.data();
@@ -78,7 +78,7 @@ public class AddPlayerCmdProcessorTest {
     when(playerRepository.listAll(any())).thenReturn(List.of(moderator));
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "111111", false, "222222"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "0", "notUsed", "TestUserName", jsonData);
-    OutputMessage dtoOut = addPlayerCmdProcessor.process(dtoIn, 1);
+    OutputMessage dtoOut = addPlayerProcessor.process(dtoIn, 1);
     assertNotNull(dtoOut);
     assertFalse(dtoOut.error());
     BotOutputMessage data = dtoOut.data();
@@ -97,7 +97,7 @@ public class AddPlayerCmdProcessorTest {
     when(playerRepository.listAll(any())).thenReturn(List.of(moderator));
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "111111", false, "222222"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "0", "notUsed", "TestUserName", jsonData);
-    assertThrows(InvalidUserRightsException.class, () -> addPlayerCmdProcessor.process(dtoIn, 1));
+    assertThrows(InvalidUserRightsException.class, () -> addPlayerProcessor.process(dtoIn, 1));
   }
 
   @Test
@@ -109,7 +109,7 @@ public class AddPlayerCmdProcessorTest {
     when(playerRepository.listAll(any())).thenReturn(List.of(moderator));
     Map<String, Object> jsonData = deserializePlayer(new AddPlayerDto("somePlayer", "wrongTid", false, "222222"));
     BotInputMessage dtoIn = new BotInputMessage(Commands.ADD_PLAYER_CMD, "0", "notUsed", "TestUserName", jsonData);
-    assertThrows(ValidationException.class, () -> addPlayerCmdProcessor.process(dtoIn, 1));
+    assertThrows(ValidationException.class, () -> addPlayerProcessor.process(dtoIn, 1));
   }
 
   private Map<String, Object> deserializePlayer(AddPlayerDto dto) throws JsonProcessingException {
@@ -144,8 +144,8 @@ public class AddPlayerCmdProcessorTest {
     }
 
     @Bean
-    AddPlayerCmdProcessor addPlayerCmdProcessor(PlayerService playerService, ObjectMapper objectMapper) {
-      return new AddPlayerCmdProcessor(playerService, objectMapper);
+    AddPlayerProcessor addPlayerCmdProcessor(PlayerService playerService, ObjectMapper objectMapper) {
+      return new AddPlayerProcessor(playerService, objectMapper);
     }
   }
 }

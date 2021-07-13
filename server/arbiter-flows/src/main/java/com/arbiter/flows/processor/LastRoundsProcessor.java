@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LastCmdProcessor implements CommandProcessor {
+public class LastRoundsProcessor implements CommandProcessor {
 
   private final ObjectMapper mapper;
   private final RoundsService roundsService;
 
-  public LastCmdProcessor(ObjectMapper mapper, RoundsService roundsService) {
+  public LastRoundsProcessor(ObjectMapper mapper, RoundsService roundsService) {
     this.mapper = mapper;
     this.roundsService = roundsService;
   }

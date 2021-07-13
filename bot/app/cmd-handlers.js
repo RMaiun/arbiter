@@ -170,6 +170,19 @@ class CmdHandlers {
     await this._rc.publish(this._dtoIn('broadcastMessage', ctx, data))
   }
 
+  async directMessage (ctx) {
+    const args = this._parseArgs(ctx.message.text)
+    const sender = args[0] || 'n/a'
+    const recipient = args[1] || 'n/a'
+    const msg = args[2] || 'n/a'
+    const data = {
+      author: sender,
+      receiver: recipient,
+      text: msg
+    }
+    await this._rc.publish(this._dtoIn('directMessage', ctx, data))
+  }
+
   async _loadFile (uri, method) {
     const response = await axios({
       url: uri,

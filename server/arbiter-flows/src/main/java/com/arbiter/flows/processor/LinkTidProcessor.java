@@ -10,12 +10,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LinkTidCmdProcessor implements CommandProcessor {
+public class LinkTidProcessor implements CommandProcessor {
 
   private final ObjectMapper mapper;
   private final SubscriptionService subscriptionService;
 
-  public LinkTidCmdProcessor(ObjectMapper mapper, SubscriptionService subscriptionService) {
+  public LinkTidProcessor(ObjectMapper mapper, SubscriptionService subscriptionService) {
     this.mapper = mapper;
     this.subscriptionService = subscriptionService;
   }

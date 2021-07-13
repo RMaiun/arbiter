@@ -10,12 +10,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SubscriptionCmdProcessor implements CommandProcessor {
+public class SubscriptionProcessor implements CommandProcessor {
 
   private final ObjectMapper objectMapper;
   private final SubscriptionService subscriptionService;
 
-  public SubscriptionCmdProcessor(ObjectMapper objectMapper, SubscriptionService subscriptionService) {
+  public SubscriptionProcessor(ObjectMapper objectMapper, SubscriptionService subscriptionService) {
     this.objectMapper = objectMapper;
     this.subscriptionService = subscriptionService;
   }

@@ -4,6 +4,7 @@ import com.arbiter.core.domain.Broadcast;
 import com.arbiter.core.dto.broadcast.BroadcastDto;
 import com.arbiter.core.dto.broadcast.StoreBroadcastDto;
 import com.arbiter.core.exception.BroadcastNotFoundException;
+import com.arbiter.core.exception.InvalidUserRightsException;
 import com.arbiter.core.repository.BroadcastRepository;
 import com.arbiter.core.service.PlayerService;
 import com.arbiter.core.utils.DateUtils;
@@ -24,7 +25,10 @@ public class BroadcastService {
 
   public BroadcastDto storeBroadcast(StoreBroadcastDto dto) {
     Validator.validate(dto, ValidationTypes.storeBroadcastDtoDtoType);
-    playerService.findPlayerByTid(dto.author());
+    var user = playerService.findPlayerByTid(dto.author());
+    if (!user.isAdmin()){
+      throw new InvalidUserRightsException();
+    }
     var domain = new Broadcast(dto.author(), dto.message(), DateUtils.now());
     var broadcast = broadcastRepository.saveBroadcast(domain);
     return BroadcastDto.fromDomain(broadcast);

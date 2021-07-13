@@ -15,7 +15,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CreateBroadcastCmdProcessor implements CommandProcessor {
+public class CreateBroadcastProcessor implements CommandProcessor {
 
   private final ObjectMapper mapper;
   private final BroadcastService broadcastService;
@@ -23,7 +23,7 @@ public class CreateBroadcastCmdProcessor implements CommandProcessor {
   private final RabbitSender rabbitSender;
   private final AppProperties appProperties;
 
-  public CreateBroadcastCmdProcessor(ObjectMapper mapper, BroadcastService broadcastService, PlayerService playerService, RabbitSender rabbitSender,
+  public CreateBroadcastProcessor(ObjectMapper mapper, BroadcastService broadcastService, PlayerService playerService, RabbitSender rabbitSender,
       AppProperties appProperties) {
     this.mapper = mapper;
     this.broadcastService = broadcastService;

@@ -17,13 +17,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StatsCmdProcessor implements CommandProcessor {
+public class StatsProcessor implements CommandProcessor {
 
   private final ObjectMapper mapper;
   private final StatisticsService statisticsService;
   private final AppProperties appProps;
 
-  public StatsCmdProcessor(ObjectMapper mapper, StatisticsService statisticsService, AppProperties appProps) {
+  public StatsProcessor(ObjectMapper mapper, StatisticsService statisticsService, AppProperties appProps) {
     this.mapper = mapper;
     this.statisticsService = statisticsService;
     this.appProps = appProps;

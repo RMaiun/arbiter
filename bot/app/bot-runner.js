@@ -28,6 +28,7 @@ class BotRunner {
     this._bot.command('/register', (ctx) => CmdHandlers.addPlayerCmdHandler(ctx))
     this._bot.command('/dump', (ctx) => CmdHandlers.loadDumpCmdHandler(ctx))
     this._bot.command('/bc', (ctx) => CmdHandlers.broadcastMessage(ctx))
+    this._bot.command('/pm', (ctx) => CmdHandlers.directMessage(ctx))
 
     this._bot.hears('Cтатистика \uD83D\uDCC8', (ctx) => CmdHandlers.statsCmdHandler(ctx, false))
     this._bot.hears('Всі гравці \uD83D\uDDFF', (ctx) => CmdHandlers.listPlayersCmdHandler(ctx))

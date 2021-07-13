@@ -14,11 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ListPlayersCmdProcessor implements CommandProcessor {
+public class ListPlayersProcessor implements CommandProcessor {
 
   private final PlayerService playerService;
 
-  public ListPlayersCmdProcessor(PlayerService playerService) {
+  public ListPlayersProcessor(PlayerService playerService) {
     this.playerService = playerService;
   }
 
