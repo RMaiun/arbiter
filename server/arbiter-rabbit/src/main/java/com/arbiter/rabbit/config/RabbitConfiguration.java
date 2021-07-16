@@ -53,4 +53,10 @@ public class RabbitConfiguration {
   public Queue outputQueue() {
     return new Queue(rabbitProperties.getOutputQueue(), false, false, false);
   }
+
+  @Bean
+  public Queue eventQueue() {
+    return new Queue(rabbitProperties.getEventQueue(), false, false, false);
+  }
+
 }

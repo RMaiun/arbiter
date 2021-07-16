@@ -28,7 +28,7 @@ public class DirectMessageProcessor implements CommandProcessor {
   @Override
   public OutputMessage process(BotInputMessage input, int msgId) {
     var data = mapper.convertValue(input.data(), DirectMessageDto.class);
-    var sender = playerService.findPlayerByName(data.author());
+    var sender = playerService.findPlayerByName(data.sender());
     var receiver = playerService.findPlayerByName(data.receiver());
     receiver.setActive(false);
     if (sender.isAdmin() && receiver.isActive() && receiver.isNotificationsEnabled() && receiver.getTid() != null) {

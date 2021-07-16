@@ -176,7 +176,7 @@ class CmdHandlers {
     const recipient = args[1] || 'n/a'
     const msg = args[2] || 'n/a'
     const data = {
-      author: sender,
+      sender,
       receiver: recipient,
       text: msg
     }
