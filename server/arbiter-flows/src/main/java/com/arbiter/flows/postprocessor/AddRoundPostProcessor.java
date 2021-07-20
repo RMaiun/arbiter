@@ -6,6 +6,8 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 
 import com.arbiter.core.dto.round.AddRoundDto;
 import com.arbiter.core.service.PlayerService;
+import com.arbiter.core.utils.SeasonUtils;
+import com.arbiter.rabbit.dto.AchievementEvent;
 import com.arbiter.rabbit.dto.BotInputMessage;
 import com.arbiter.rabbit.dto.BotOutputMessage;
 import com.arbiter.rabbit.dto.OutputMessage;
@@ -15,12 +17,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AddRoundPostProcessor implements PostProcessor {
 
+  private static final Logger log = LogManager.getLogger(AddRoundPostProcessor.class);
   private final ObjectMapper mapper;
   private final PlayerService playerService;
   private final RabbitSender rabbitSender;
@@ -47,6 +54,17 @@ public class AddRoundPostProcessor implements PostProcessor {
     );
     dataList.forEach(el -> sendNotificationToUser(msgId, el.getLeft(), el.getRight(), el.getMiddle()));
 
+    fireEventsForAchievements(dto);
+  }
+
+  private void fireEventsForAchievements(AddRoundDto dto) {
+    Stream.of(dto.w1(), dto.w2(), dto.l1(), dto.l2())
+        .map(p -> playerService.findPlayerByName(p.toLowerCase()))
+        .map(p -> new AchievementEvent(p.getSurname(), p.getTid(), SeasonUtils.currentSeason()))
+        .forEach(e -> {
+          rabbitSender.fireEvent(e);
+          log.info("Event was sent {}", e);
+        });
   }
 
   private AddRoundDto parse(Map<String, Object> data) {
@@ -58,6 +76,7 @@ public class AddRoundPostProcessor implements PostProcessor {
     if (p.isNotificationsEnabled() && nonNull(p.getTid())) {
       var dto = new BotOutputMessage(p.getTid(), msgId, formatNotification(opponents, winner));
       rabbitSender.send(OutputMessage.ok(dto));
+      log.info("Notification was sent for user {}", p.getSurname());
     }
   }
 

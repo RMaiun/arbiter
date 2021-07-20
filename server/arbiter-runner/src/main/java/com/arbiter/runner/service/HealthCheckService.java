@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HealthCheckService {
 
-  public static final String PING_MSG = "```I'm alive```";
+  public static final String PING_MSG = "``` I'm alive```";
   private final RabbitSender rabbitSender;
   private final AppProperties appProperties;
   private final PlayerService playerService;
